@@ -10,7 +10,7 @@ import React from 'react';
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="p-4 flex flex-col bg-white h-screen remove-scrollbar w-[240px]">
+    <aside className="p-4 sm:flex flex-col bg-white h-screen remove-scrollbar sm:w-[170px] md:w-[200px] lg:w-[220px]">
       <h1 className="my-6 mx-4">Logo</h1>
       <nav>
         <ul className="flex flex-col my-12">
@@ -18,7 +18,7 @@ const Sidebar = () => {
             <Link key={item.id} href={item.path}>
               <li
                 className={cn(
-                  'flex py-3 my-5 mx-2 items-center gap-3 rounded-2xl',
+                  'flex py-3 my-5 mx-2 items-center sm:justify-normal justify-center gap-3 rounded-2xl',
                   pathname === item.path && 'bg-brand shadow-drop-2'
                 )}
               >
@@ -27,9 +27,11 @@ const Sidebar = () => {
                   alt={item.name}
                   width={32}
                   height={32}
-                  className="mx-4"
+                  className="md:mx-4 sm:ml-2"
                 ></Image>
-                <p className="font-medium text-[20px] ">{item.name}</p>
+                <p className="font-medium lg:text-[18px] sm:[12px] sm:mr-1 hidden sm:block">
+                  {item.name}
+                </p>
               </li>
             </Link>
           ))}
