@@ -4,16 +4,23 @@ import Image from 'next/image';
 
 const Header = () => {
   return (
-    <header className="flex justify-between">
+    <header className="flex justify-between bg-white p-4 w-full h-[104px]">
       <Search />
+      <Image
+        src="/icons/bell.svg"
+        alt="Notification Bell"
+        width={26}
+        height={26}
+        className="mx-8"
+      />
       <div className="flex gap-3">
-        <Image src="/icons/logout.svg" alt="logout" width={32} height={32} />
+        <Image src="/icons/logout.svg" alt="logout" width={28} height={28} />
         <Image
           src="/images/profile-pic.jpg"
           alt="profile"
           width={48}
           height={48}
-          className="rounded-full m-6 object-cover h-[48px]"
+          className="rounded-full mx-6 mt-4 object-cover h-[48px]"
         />
       </div>
     </header>
