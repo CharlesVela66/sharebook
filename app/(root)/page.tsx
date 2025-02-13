@@ -8,13 +8,13 @@ import ToRead from '@/components/ToRead';
 
 const Home = () => {
   return (
-    <section className="flex my-12 ml-12 gap-4 justify-between">
-      <div className="flex flex-col">
+    <section className="flex my-12">
+      <div className="flex flex-col w-full items-center justify-center ml-16">
         {books.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
       </div>
-      <div className="flex flex-col h-full sticky bg-white">
+      <div className="flex flex-col h-full sticky bg-white max-w-[440px] w-full mx-6">
         <ReadingChallenge />
         <CurrentlyReading />
         <WantToRead />

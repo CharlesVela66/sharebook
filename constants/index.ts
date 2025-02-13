@@ -93,3 +93,18 @@ export const books = [
     coverImage: '/images/atomichabits.jpg',
   },
 ];
+
+export const users = [
+  {
+    id: 1,
+    name: 'Carlos Velasco',
+    profilePic: '/images/profile-pic.jpg',
+    email: 'carlosed.velasco@gmail.com',
+    username: 'charlesvelaa',
+    dateOfBirth: 'April 9th, 2003',
+    country: 'Mexico',
+    createdAt: 'February 2nd, 2025',
+    readingGoal: null,
+    friends: null,
+  },
+];

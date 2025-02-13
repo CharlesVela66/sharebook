@@ -1,6 +1,7 @@
 import React from 'react';
 import Search from './Search';
 import Image from 'next/image';
+import { users } from '../constants';
 
 const Header = () => {
   return (
@@ -16,7 +17,7 @@ const Header = () => {
       <div className="flex gap-3">
         <Image src="/icons/logout.svg" alt="logout" width={28} height={28} />
         <Image
-          src="/images/profile-pic.jpg"
+          src={users[0].profilePic}
           alt="profile"
           width={48}
           height={48}

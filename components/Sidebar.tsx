@@ -10,7 +10,7 @@ import React from 'react';
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="p-4 sm:flex flex-col bg-white h-screen remove-scrollbar sm:w-[170px] md:w-[200px] lg:w-[220px]">
+    <aside className="p-4 sm:flex flex-col bg-white h-screen remove-scrollbar sm:w-[170px] md:w-[200px] lg:w-[220px] sticky">
       <h1 className="my-6 mx-4">Logo</h1>
       <nav>
         <ul className="flex flex-col my-12">
