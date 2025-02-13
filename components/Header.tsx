@@ -20,7 +20,7 @@ const Header = () => {
           alt="profile"
           width={48}
           height={48}
-          className="rounded-full mx-6 mt-4 object-cover h-[48px]"
+          className="rounded-full mx-6 mt-3 object-cover h-[48px]"
         />
       </div>
     </header>
