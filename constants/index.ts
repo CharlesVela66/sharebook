@@ -108,3 +108,33 @@ export const users = [
     friends: null,
   },
 ];
+
+enum Status {
+  'Want To Read',
+  'Currently Reading',
+  'Read',
+}
+
+export const usersBooks = [
+  {
+    id: 1,
+    idUser: 1,
+    idBook: 1,
+    status: Status['Currently Reading'],
+    ratingGiven: null,
+  },
+  {
+    id: 2,
+    idUser: 1,
+    idBook: 2,
+    status: Status['Read'],
+    ratingGiven: 5,
+  },
+  {
+    id: 1,
+    idUser: 1,
+    idBook: 1,
+    status: Status['Want To Read'],
+    ratingGiven: null,
+  },
+];

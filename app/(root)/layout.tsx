@@ -12,7 +12,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="flex h-full w-full">
       <Sidebar />
-      <section className="flex w-full h-full flex-1 flex-col">
+      <section className="flex w-full h-full flex-1 flex-col pl-[213px]">
         <Header />
         {children}
       </section>

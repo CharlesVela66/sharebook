@@ -5,7 +5,7 @@ import { users } from '../constants';
 
 const Header = () => {
   return (
-    <header className="flex justify-between bg-white p-4 min-w-full h-[104px]">
+    <header className="flex justify-between bg-white p-4  h-[104px] fixed top-0 z-50 left-[213px] right-0">
       <Search />
       <Image
         src="/icons/bell.svg"
@@ -14,14 +14,14 @@ const Header = () => {
         height={26}
         className="mx-8"
       />
-      <div className="flex gap-3">
+      <div className="flex gap-3 items-center">
         <Image src="/icons/logout.svg" alt="logout" width={28} height={28} />
         <Image
           src={users[0].profilePic}
           alt="profile"
           width={48}
           height={48}
-          className="rounded-full mx-6 mt-3 object-cover h-[48px]"
+          className="rounded-full mx-6 object-cover h-[48px]"
         />
       </div>
     </header>
