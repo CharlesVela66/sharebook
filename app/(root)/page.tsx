@@ -9,12 +9,12 @@ import ToRead from '@/components/ToRead';
 const Home = () => {
   return (
     <section className="flex my-12">
-      <div className="flex flex-col w-full items-center justify-center ml-16">
+      <div className="flex flex-col w-full ml-32">
         {books.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
       </div>
-      <div className="flex flex-col h-full sticky bg-white max-w-[440px] w-full mx-6">
+      <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
         <ReadingChallenge />
         <CurrentlyReading />
         <WantToRead />

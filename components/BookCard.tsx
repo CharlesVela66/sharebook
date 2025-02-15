@@ -16,7 +16,7 @@ const BookCard = ({ book }: BookCardProps) => {
         alt="profile"
         width={48}
         height={48}
-        className="rounded-full object-cover h-[48px] absolute z-50 -translate-x-5 -translate-y-1"
+        className="rounded-full object-cover h-[48px] absolute z-10 -translate-x-5 -translate-y-1"
       />
       <div className="flex flex-col my-2 ml-6">
         <h2 className="text-[18px] font-normal ml-3 mb-4">

@@ -5,7 +5,7 @@ import { users } from '../constants';
 
 const Header = () => {
   return (
-    <header className="flex justify-between bg-white p-4 w-full h-[104px]">
+    <header className="flex justify-between bg-white p-4 min-w-full h-[104px]">
       <Search />
       <Image
         src="/icons/bell.svg"
