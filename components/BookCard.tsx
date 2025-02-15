@@ -48,7 +48,6 @@ const BookCard = ({ book }: BookCardProps) => {
               height={12}
             />
           </Button>
-          {/* <Button className="bg-dark-300 text-white rounded-lg">V</Button> */}
         </div>
       </div>
     </div>

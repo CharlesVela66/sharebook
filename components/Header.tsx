@@ -2,6 +2,7 @@ import React from 'react';
 import Search from './Search';
 import Image from 'next/image';
 import { users } from '../constants';
+import Link from 'next/link';
 
 const Header = () => {
   return (
@@ -16,13 +17,15 @@ const Header = () => {
       />
       <div className="flex gap-3 items-center">
         <Image src="/icons/logout.svg" alt="logout" width={28} height={28} />
-        <Image
-          src={users[0].profilePic}
-          alt="profile"
-          width={48}
-          height={48}
-          className="rounded-full mx-6 object-cover h-[48px]"
-        />
+        <Link href={`/profile/${users[0].id}`}>
+          <Image
+            src={users[0].profilePic}
+            alt="profile"
+            width={48}
+            height={48}
+            className="rounded-full mx-6 object-cover h-[48px] w-[48px]"
+          />
+        </Link>
       </div>
     </header>
   );

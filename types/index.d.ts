@@ -10,3 +10,14 @@ declare interface Book {
   categories: string[];
   coverImage: string;
 }
+
+declare interface User {
+  id: number;
+  email: string;
+  username: string;
+  dateOfBirth: string;
+  country: string;
+  createdAt: string;
+  readingGoal?: number;
+  friends?: User[];
+}
