@@ -1,8 +1,8 @@
-import BookCard from '@/components/BookCard';
 import React from 'react';
 import { books } from '@/constants';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import BookStatusCard from '@/components/BookStatusCard';
+import Feed from '@/components/Feed';
 
 const Home = () => {
   const currentlyReadingBooks = books.filter(
@@ -12,12 +12,8 @@ const Home = () => {
   const wantToReadBooks = books.filter((book) => book.id === 3);
 
   return (
-    <section className="flex mb-12 mt-36">
-      <div className="flex flex-col w-full ml-32">
-        {books.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
-      </div>
+    <section className="flex mb-12 mt-36 ml-32">
+      <Feed />
       <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
         <ReadingChallenge />
         <BookStatusCard
