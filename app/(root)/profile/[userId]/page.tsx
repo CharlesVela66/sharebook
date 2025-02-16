@@ -37,7 +37,7 @@ const Profile = () => {
           </div>
         </div>
         <div className="max-w-[420px] w-full">
-          <ReadingChallenge />
+          <ReadingChallenge goal={user.readingGoal}/>
         </div>
       </div>
       <div className="flex w-full mb-12 justify-between gap-4">
