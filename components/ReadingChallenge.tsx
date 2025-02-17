@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 
 const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
   const [progress, setProgress] = useState(13);
@@ -92,7 +91,7 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
                   <DialogTitle className="text-center text-[24px] mb-2 font-bold">
                     Set Reading Goal
                   </DialogTitle>
-                  <DialogDescription className="mb-2 text-[16px] text-center">
+                  <DialogDescription className="mb-2 text-[16px] text-center font-medium">
                     How many books are you going to read in{' '}
                     {new Date().getFullYear()}?
                   </DialogDescription>
@@ -128,7 +127,7 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
                 <DialogFooter>
                   <Button
                     type="submit"
-                    className="bg-brand text-[16px] py-2 px-12 font-semibold"
+                    className="bg-brand text-[16px] py-5 px-12 font-semibold"
                   >
                     Done
                   </Button>

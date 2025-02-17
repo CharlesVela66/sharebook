@@ -10,7 +10,7 @@ interface BookCardProps {
 
 const BookCard = ({ book }: BookCardProps) => {
   return (
-    <div className="max-w-[820px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
+    <div className="max-w-[920px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
       <Image
         src={users[0].profilePic}
         alt="profile"

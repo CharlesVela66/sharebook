@@ -1,3 +1,4 @@
+import EditProfile from '@/components/EditProfile';
 import Feed from '@/components/Feed';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import { users, usersBooks } from '@/constants';
@@ -32,12 +33,10 @@ const Profile = () => {
               {count} ratings (4.00 average)
             </p>
           </div>
-          <div className="absolute top-2 right-14">
-            <Image src="/icons/edit.svg" alt="edit" width={24} height={24} />
-          </div>
+          <EditProfile user={user} />
         </div>
         <div className="max-w-[420px] w-full">
-          <ReadingChallenge goal={user.readingGoal}/>
+          <ReadingChallenge goal={user.readingGoal} />
         </div>
       </div>
       <div className="flex w-full mb-12 justify-between gap-4">

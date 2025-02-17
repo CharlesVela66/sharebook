@@ -12,7 +12,7 @@ const Home = () => {
   const wantToReadBooks = books.filter((book) => book.id === 3);
 
   return (
-    <section className="flex mb-12 mt-36 ml-32">
+    <section className="flex mb-12 mt-36 ml-24">
       <Feed />
       <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
         <ReadingChallenge />

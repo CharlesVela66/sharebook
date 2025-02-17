@@ -13,11 +13,13 @@ declare interface Book {
 
 declare interface User {
   id: number;
+  name: string;
   email: string;
+  profilePic: string;
   username: string;
   dateOfBirth: string;
   country: string;
   createdAt: string;
-  readingGoal?: number;
-  friends?: User[];
+  readingGoal?: number | null;
+  friends?: User[] | null;
 }
