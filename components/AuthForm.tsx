@@ -112,65 +112,71 @@ const AuthForm = ({ type }: { type: FormType }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <div className="shad-form-item">
-                  <FormLabel className="shad-form-label">Username</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your username"
-                      {...field}
-                      className="shad-input"
-                    />
-                  </FormControl>
-                </div>
-                <FormMessage className="shad-form-message" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dateOfBirth"
-            render={({ field }) => (
-              <FormItem>
-                <div className="shad-form-item">
-                  <FormLabel className="shad-form-label">
-                    Date Of Birth
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your date of birth"
-                      {...field}
-                      className="shad-input"
-                    />
-                  </FormControl>
-                </div>
-                <FormMessage className="shad-form-message" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem>
-                <div className="shad-form-item">
-                  <FormLabel className="shad-form-label">Country</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your country"
-                      {...field}
-                      className="shad-input"
-                    />
-                  </FormControl>
-                </div>
-                <FormMessage className="shad-form-message" />
-              </FormItem>
-            )}
-          />
+          {type === 'sign-up' && (
+            <>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="shad-form-item">
+                      <FormLabel className="shad-form-label">
+                        Username
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your username"
+                          {...field}
+                          className="shad-input"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="shad-form-message" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="shad-form-item">
+                      <FormLabel className="shad-form-label">
+                        Date Of Birth
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your date of birth"
+                          {...field}
+                          className="shad-input"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="shad-form-message" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="shad-form-item">
+                      <FormLabel className="shad-form-label">Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your country"
+                          {...field}
+                          className="shad-input"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="shad-form-message" />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
           <Button
             type="submit"
             className="form-submit-button"
