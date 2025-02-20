@@ -68,7 +68,7 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
       <h2 className="font-semibold text-[20px] my-2 ">
         {new Date().getFullYear()} Reading Challenge
       </h2>
-      <div className="flex flex-col max-w-[420px] bg-white rounded-3xl mb-8 shadow-lg h-[220px] items-center justify-center">
+      <div className="flex flex-col max-w-[420px] bg-white rounded-3xl mb-6 shadow-lg h-[190px] items-center justify-center">
         {goal ? (
           <>
             <h1 className="h1 text-brand-100">{progress}%</h1>
