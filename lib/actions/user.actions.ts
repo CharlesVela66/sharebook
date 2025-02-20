@@ -45,7 +45,7 @@ export const createAccount = async ({
   name: string;
   email: string;
   username: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   country: string;
 }) => {
   const existingUser = await getUserByEmail(email);

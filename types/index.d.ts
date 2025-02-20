@@ -40,3 +40,5 @@ declare type BookResponse = {
     ratingsCount?: number;
   };
 };
+
+export type FormType = 'sign-in' | 'sign-up';
