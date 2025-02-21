@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { useDebounce } from 'use-debounce';
 import { getBooks } from '@/lib/actions/book.actions';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Book = {
   id: string;
@@ -23,6 +24,8 @@ const Search = () => {
   const [error, setError] = useState('');
   const [debouncedQuery] = useDebounce(query, 300);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -71,6 +74,11 @@ const Search = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setOpen(false);
+    }
+    if (e.key === 'Enter' && query.length >= 3) {
+      e.preventDefault();
+      setOpen(false);
+      router.push(`/search/${encodeURIComponent(query)}`);
     }
   };
 

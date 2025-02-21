@@ -3,6 +3,7 @@ import React from 'react';
 import { users } from '../constants';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import { Book } from '@/types';
 
 interface BookCardProps {
   book: Book;

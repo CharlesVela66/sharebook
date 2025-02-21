@@ -10,9 +10,9 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 import { ChangeEvent, useState } from 'react';
+import { User } from '@/types';
+import InputField from './InputField';
 
 declare interface EditProfileProps {
   user: User;
@@ -58,7 +58,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
           </DialogHeader>
           <div>
             <Image
-              src={profilePic}
+              src={profilePic || '/images/profile-pic.jpg'}
               alt="user"
               width={200}
               height={200}
@@ -67,61 +67,56 @@ const EditProfile = ({ user }: EditProfileProps) => {
           </div>
           <form className="flex flex-col w-full px-8 gap-y-3 items-center justify-center">
             <div className="w-full">
-              <Label htmlFor="name">Name</Label>
-              <Input
+              <InputField
                 type="text"
                 id="name"
                 placeholder="Name"
+                label="Name"
                 value={currentUser.name}
                 onChange={handleInputChange}
-                className="rounded-lg py-5 shadow-md bg-white"
               />
             </div>
             <div className="flex gap-4">
               <div className="w-1/2">
-                <Label htmlFor="username">Username</Label>
-                <Input
+                <InputField
                   type="text"
                   id="username"
                   placeholder="Username"
+                  label="Username"
                   value={currentUser.username}
                   onChange={handleInputChange}
-                  className="rounded-lg py-5 shadow-md bg-white"
                 />
               </div>
               <div className="w-1/2">
-                <Label htmlFor="email">Email</Label>
-                <Input
+                <InputField
                   type="email"
                   id="email"
                   placeholder="Email"
+                  label="Email"
                   value={currentUser.email}
                   onChange={handleInputChange}
-                  className="rounded-lg py-5 shadow-md bg-white"
                 />
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-1/2">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                <Input
+                <InputField
                   type="text"
                   id="dateOfBirth"
-                  placeholder="09/04/1990"
+                  placeholder="Date of Birth"
+                  label="Date of Birth"
                   value={currentUser.dateOfBirth}
                   onChange={handleInputChange}
-                  className="rounded-lg py-5 shadow-md bg-white"
                 />
               </div>
               <div className="w-1/2">
-                <Label htmlFor="country">Country</Label>
-                <Input
+                <InputField
                   type="text"
                   id="country"
                   placeholder="Country"
+                  label="Country"
                   value={currentUser.country}
                   onChange={handleInputChange}
-                  className="rounded-lg py-5 shadow-md bg-white"
                 />
               </div>
             </div>

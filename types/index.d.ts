@@ -1,5 +1,5 @@
 declare interface Book {
-  id: number;
+  $id: string;
   name: string;
   author: string;
   description: string;

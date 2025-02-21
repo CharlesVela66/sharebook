@@ -1,6 +1,5 @@
 import React from 'react';
 import BookCard from './BookCard';
-import { books } from '@/constants';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { getUserFeed } from '@/lib/actions/book.actions';
@@ -14,13 +13,11 @@ const Feed = async ({
 }) => {
   const feed = await getUserFeed({ userId: user.$id });
 
-  console.log(feed);
-
   return (
     <>
       {feed ? (
         <div className={cn('flex flex-col w-full', className)}>
-          {books.map((book) => (
+          {feed.map((book) => (
             <BookCard key={book.id} book={book} />
           ))}
         </div>
