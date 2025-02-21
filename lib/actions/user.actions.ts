@@ -6,6 +6,7 @@ import { appwriteConfig } from '../appwrite/config';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { parseStringify } from '../utils';
+import { revalidatePath } from 'next/cache';
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -142,4 +143,28 @@ export const signInUser = async ({ email }: { email: string }) => {
   } catch (error) {
     handleError(error, 'Failed to sign in user');
   }
+};
+
+export const setReadingGoal = async ({
+  userId,
+  goal,
+}: {
+  userId: string;
+  goal: number;
+}) => {
+  const { databases } = await createAdminClient();
+
+  const result = await databases.updateDocument(
+    appwriteConfig.databaseId,
+    appwriteConfig.userCollectionId,
+    userId,
+    {
+      readingGoal: goal,
+    }
+  );
+
+  if (!result) throw new Error('Error at creating new reading goal');
+
+  revalidatePath(`/profile/${userId}`);
+  return { success: true, message: 'Reading goal updated successfully' };
 };

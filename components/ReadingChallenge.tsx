@@ -12,11 +12,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { setReadingGoal } from '@/lib/actions/user.actions';
 
-const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
+const ReadingChallenge = ({
+  goal,
+  userId,
+}: {
+  goal?: number | null;
+  userId: string;
+}) => {
   const [progress, setProgress] = useState(13);
   const [currentGoal, setCurrentGoal] = useState(goal || 1);
   const [inputValue, setInputValue] = useState(String(currentGoal));
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateBothValues = (newValue: number) => {
     setCurrentGoal(newValue);
@@ -58,6 +67,29 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
     }
   };
 
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      const result = await setReadingGoal({
+        userId,
+        goal: currentGoal,
+      });
+
+      if (result.success) {
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => setProgress(50), 500);
     return () => clearTimeout(timer);
@@ -80,7 +112,7 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
             <p className="text-center mx-20 py-4 font-normal">
               You don&apos;t have a reading goal!
             </p>
-            <Dialog>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-brand font-semibold p-6 text-[18px]">
                   Set Goal
@@ -127,7 +159,9 @@ const ReadingChallenge = ({ goal }: { goal?: number | null }) => {
                 <DialogFooter>
                   <Button
                     type="submit"
+                    disabled={isSubmitting}
                     className="bg-brand text-[16px] py-5 px-12 font-semibold"
+                    onClick={handleSubmit}
                   >
                     Done
                   </Button>

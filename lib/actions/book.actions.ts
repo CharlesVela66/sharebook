@@ -1,6 +1,10 @@
 'use server';
 
+import { BookResponse } from '@/types';
 import { z } from 'zod';
+import { createAdminClient } from '../appwrite';
+import { appwriteConfig } from '../appwrite/config';
+import { Query } from 'node-appwrite';
 
 // We use zod to validate the input value
 const searchSchema = z.object({
@@ -101,4 +105,44 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
       error: error instanceof Error ? error.message : 'Failed to fetch books',
     };
   }
+};
+
+export const getUserFeed = async ({ userId }: { userId: string }) => {
+  const { databases } = await createAdminClient();
+
+  const result = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.bookActivityCollectionId,
+    [Query.equal('userId', userId)]
+  );
+
+  return result.total > 0 ? result.documents[0] : null;
+};
+
+export const getAllUserBooks = async ({ userId }: { userId: string }) => {
+  const { databases } = await createAdminClient();
+
+  const result = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.bookActivityCollectionId,
+    [Query.equal('userId', [userId])]
+  );
+  return result;
+};
+
+export const getUserBooksByStatus = async ({
+  userId,
+  bookStatus,
+}: {
+  userId: string;
+  bookStatus: string;
+}) => {
+  const { databases } = await createAdminClient();
+
+  const result = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.bookActivityCollectionId,
+    [Query.equal('userId', [userId]), Query.equal('status', [bookStatus])]
+  );
+  return result;
 };

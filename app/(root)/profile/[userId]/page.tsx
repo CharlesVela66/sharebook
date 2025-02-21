@@ -2,12 +2,13 @@ import EditProfile from '@/components/EditProfile';
 import Feed from '@/components/Feed';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import StatusCard from '@/components/StatusCard';
-import { users, usersBooks } from '@/constants';
+import { usersBooks } from '@/constants';
+import { getCurrentUser } from '@/lib/actions/user.actions';
 import Image from 'next/image';
 import React from 'react';
 
-const Profile = () => {
-  const user = users[0];
+const Profile = async () => {
+  const user = await getCurrentUser();
   const count = usersBooks.filter(
     (userBook) => userBook.idUser === user.id
   ).length;
@@ -16,7 +17,7 @@ const Profile = () => {
       <div className="flex justify-between w-full mb-4">
         <div className="flex gap-6 relative w-full">
           <Image
-            src={user.profilePic}
+            src={user.profilePic || '/images/profile-pic.jpg'}
             alt="profile picture"
             width={232}
             height={266}
@@ -25,7 +26,7 @@ const Profile = () => {
           <div className="flex flex-col">
             <h3 className="font-semibold text-[28px]">{user.name}</h3>
             <p className="font-normal text-[18px] mb-[104px]">
-              (joined in {user.createdAt})
+              (joined in {user.$createdAt})
             </p>
             <p className="font-normal text-[18px]">
               Birthday: {user.dateOfBirth}
@@ -37,7 +38,7 @@ const Profile = () => {
           <EditProfile user={user} />
         </div>
         <div className="max-w-[420px] w-full">
-          <ReadingChallenge goal={user.readingGoal} />
+          <ReadingChallenge goal={user.readingGoal} userId={user.$id} />
         </div>
       </div>
       <div className="flex w-full mb-12 justify-between gap-4">
@@ -48,7 +49,7 @@ const Profile = () => {
         />
         <StatusCard status="Want To Read" imageSrc="/icons/book-closed.svg" />
       </div>
-      <Feed className="items-center justify-center" />
+      <Feed user={user} className="items-center justify-center" />
     </section>
   );
 };

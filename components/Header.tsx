@@ -1,10 +1,11 @@
 import React from 'react';
 import Search from './Search';
 import Image from 'next/image';
-import { users } from '../constants';
 import Link from 'next/link';
+import { User } from '@/types';
+import { signOutUser } from '@/lib/actions/user.actions';
 
-const Header = () => {
+const Header = ({ user }: { user: User }) => {
   return (
     <header className="flex justify-between bg-white p-4  h-[104px] fixed top-0 z-50 left-[213px] right-0">
       <Search />
@@ -16,10 +17,17 @@ const Header = () => {
         className="mx-8"
       />
       <div className="flex gap-3 items-center">
-        <Image src="/icons/logout.svg" alt="logout" width={28} height={28} />
-        <Link href={`/profile/${users[0].id}`}>
+        <Image
+          src="/icons/logout.svg"
+          alt="logout"
+          width={28}
+          height={28}
+          onClick={signOutUser}
+          className="cursor-pointer"
+        />
+        <Link href={`/profile/${user.$id}`}>
           <Image
-            src={users[0].profilePic}
+            src={user.profilePic || '/images/profile-pic.jpg'}
             alt="profile"
             width={48}
             height={48}

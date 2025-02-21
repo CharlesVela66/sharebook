@@ -12,7 +12,7 @@ declare interface Book {
 }
 
 declare interface User {
-  id: number;
+  $id: string;
   name: string;
   email: string;
   profilePic: string;

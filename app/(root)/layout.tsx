@@ -7,15 +7,15 @@ import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-  const currentUser = await getCurrentUser();
+  const user = await getCurrentUser();
 
-  if (!currentUser) return redirect('/sign-in');
+  if (!user) return redirect('/sign-in');
 
   return (
     <main className="flex h-full w-full">
       <Sidebar />
       <section className="flex w-full h-full flex-1 flex-col pl-[213px]">
-        <Header />
+        <Header user={user} />
         {children}
       </section>
     </main>
