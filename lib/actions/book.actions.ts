@@ -115,20 +115,95 @@ export const getUserBooksByStatus = async ({
   userId: string;
   bookStatus?: string;
 }) => {
-  const { databases } = await createAdminClient();
+  try {
+    // Get the admin client and API key
+    const { databases } = await createAdminClient();
+    const apiKey = process.env.GOOGLE_BOOKS_API;
 
-  const queries = [Query.equal('userId', [userId])];
+    if (!apiKey) {
+      throw new Error('Google Books API key is not configured');
+    }
 
-  if (bookStatus) {
-    queries.push(Query.equal('status', [bookStatus]));
+    // Build queries for Appwrite
+    const queries = [Query.equal('userId', [userId])];
+    if (bookStatus) {
+      queries.push(Query.equal('status', [bookStatus]));
+    }
+
+    // Get user's book activities from Appwrite
+    const result = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.bookActivityCollectionId,
+      queries
+    );
+
+    // If no books found, return empty array
+    if (result.documents.length === 0) {
+      return { success: true, books: [] };
+    }
+
+    // Extract book IDs and create a map for ratings
+    const bookIds = result.documents.map((doc: any) => doc.bookId);
+    const userRatings = new Map(
+      result.documents.map((doc: any) => [doc.bookId, doc.rating])
+    );
+
+    // Fetch books from Google Books API in batches
+    const batchSize = 10; // Google Books API allows up to 10 volumes per request
+    const bookBatches = [];
+
+    for (let i = 0; i < bookIds.length; i += batchSize) {
+      const batchIds = bookIds.slice(i, i + batchSize);
+      const batchPromises = batchIds.map(async (id) => {
+        const url = new URL(
+          `https://www.googleapis.com/books/v1/volumes/${id}`
+        );
+        url.searchParams.append('key', apiKey);
+
+        const response = await fetch(url.toString(), {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error(`Failed to fetch book ${id}: ${response.statusText}`);
+          return null;
+        }
+
+        return response.json();
+      });
+
+      const batchResults = await Promise.all(batchPromises);
+      bookBatches.push(...batchResults.filter(Boolean));
+    }
+
+    // Transform the books data
+    const books = bookBatches.map((book: BookResponse) => ({
+      id: book.id,
+      title: book.volumeInfo?.title || 'Untitled',
+      authors: book.volumeInfo?.authors || [],
+      description: book.volumeInfo?.description || '',
+      pageCount: book.volumeInfo?.pageCount || 0,
+      publishedDate: book.volumeInfo?.publishedDate || '',
+      categories: book.volumeInfo?.categories || [],
+      thumbnail:
+        book.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') ||
+        '',
+      averageRating: book.volumeInfo?.averageRating || 0,
+      ratingsCount: book.volumeInfo?.ratingsCount || 0,
+      userRating: userRatings.get(book.id) || 0, // Add user's rating
+    }));
+
+    return { success: true, books };
+  } catch (error) {
+    console.error('Error fetching user books:', error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : 'Failed to fetch user books',
+    };
   }
-
-  const result = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.bookActivityCollectionId,
-    queries
-  );
-  return result;
 };
 
 export const getUserBookActivity = async ({ userId }: { userId: string }) => {

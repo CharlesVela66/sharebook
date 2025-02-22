@@ -15,9 +15,9 @@ const BookStatusCard = ({ title, books }: BookStatusCardProps) => {
         {books && books.length > 0 ? (
           books.map((book) => (
             <Image
-              key={book.$id}
-              src={book.coverImage}
-              alt={book.name}
+              key={book.id}
+              src={book.thumbnail || '/icons/book-open.svg'}
+              alt={book.title}
               width={110}
               height={140}
               className="rounded-md object-cover flex-shrink-0"

@@ -1,14 +1,15 @@
 declare interface Book {
-  $id: string;
-  name: string;
-  author: string;
+  id: string;
+  title: string;
+  authors: string[];
   description: string;
-  rating: number;
-  numberRatings: number;
   pageCount: number;
   publishedDate: string;
   categories: string[];
-  coverImage: string;
+  thumbnail: string;
+  averageRating: number;
+  ratingsCount: number;
+  userRating?: number;
 }
 
 declare interface User {

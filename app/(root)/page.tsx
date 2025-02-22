@@ -7,7 +7,7 @@ import {
   getUserBookActivity,
   getUserBooksByStatus,
 } from '@/lib/actions/book.actions';
-import { transformDocumentListToBooks } from '@/lib/utils';
+import { transformBookResponse } from '@/lib/utils';
 
 const Home = async () => {
   const user = await getCurrentUser();
@@ -42,16 +42,13 @@ const Home = async () => {
         />
         <BookStatusCard
           title="Currently Reading"
-          books={transformDocumentListToBooks(currentlyReadingBooks)}
+          books={transformBookResponse(currentlyReadingBooks)}
         />
         <BookStatusCard
           title="Want To Read"
-          books={transformDocumentListToBooks(wantToReadBooks)}
+          books={transformBookResponse(wantToReadBooks)}
         />
-        <BookStatusCard
-          title="Read"
-          books={transformDocumentListToBooks(readBooks)}
-        />
+        <BookStatusCard title="Read" books={transformBookResponse(readBooks)} />
       </div>
     </section>
   );

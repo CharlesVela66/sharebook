@@ -26,15 +26,17 @@ const BookCard = ({ book }: BookCardProps) => {
         </h2>
         <div className="flex flex-row gap-4">
           <Image
-            src={book.coverImage}
-            alt={book.name}
+            src={book.thumbnail}
+            alt={book.title}
             width={90}
             height={130}
             className="rounded-lg object-cover"
           />
           <div className="flex flex-col mr-4">
-            <h2 className="font-semibold text-[24px] mb-2">{book.name}</h2>
-            <h4 className="font-medium italic text-[16px]">by {book.author}</h4>
+            <h2 className="font-semibold text-[24px] mb-2">{book.title}</h2>
+            <h4 className="font-medium italic text-[16px]">
+              by {book.authors}
+            </h4>
           </div>
         </div>
         {/* Book shelf button */}

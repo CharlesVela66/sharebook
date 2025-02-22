@@ -33,18 +33,22 @@ export const authFormSchema = (formType: FormType) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const transformDocumentListToBooks = (documentList: any): Book[] => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return documentList.documents.map((doc: any) => ({
-    $id: doc.$id,
-    name: doc.name,
-    author: doc.author,
-    description: doc.description,
-    rating: doc.rating,
-    numberRatings: doc.numberRatings,
-    pageCount: doc.pageCount,
-    publishedDate: doc.publishedDate,
-    categories: doc.categories,
-    coverImage: doc.coverImage,
+export const transformBookResponse = (response: any): Book[] => {
+  if (!response?.success || !response?.books) {
+    return [];
+  }
+
+  return response.books.map((book: Book) => ({
+    id: book.id,
+    title: book.title,
+    authors: book.authors,
+    description: book.description,
+    pageCount: book.pageCount,
+    publishedDate: book.publishedDate,
+    categories: book.categories,
+    thumbnail: book.thumbnail,
+    averageRating: book.averageRating,
+    ratingsCount: book.ratingsCount,
+    userRating: book.userRating,
   }));
 };
