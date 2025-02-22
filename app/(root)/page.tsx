@@ -33,7 +33,7 @@ const Home = async () => {
 
   return (
     <section className="flex mb-12 mt-36 ml-24">
-      <Feed feed={bookActivity} />
+      <Feed feed={bookActivity} user={user} />
       <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
         <ReadingChallenge
           userId={user.$id}

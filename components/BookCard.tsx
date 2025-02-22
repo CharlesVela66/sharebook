@@ -1,32 +1,36 @@
 import Image from 'next/image';
 import React from 'react';
-import { users } from '../constants';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { Book } from '@/types';
+import { Book, User } from '@/types';
 
 interface BookCardProps {
   book: Book;
+  user?: User;
 }
 
-const BookCard = ({ book }: BookCardProps) => {
+const BookCard = ({ book, user }: BookCardProps) => {
   return (
     <div className="max-w-[920px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
-      <Image
-        src={users[0].profilePic}
-        alt="profile"
-        width={48}
-        height={48}
-        className="rounded-full object-cover h-[48px] absolute z-10 -translate-x-5 -translate-y-1"
-      />
+      {user && (
+        <Image
+          src={user.profilePic || '/images/profile-pic'}
+          alt="profile"
+          width={48}
+          height={48}
+          className="rounded-full object-cover h-[48px] absolute z-10 -translate-x-5 -translate-y-1"
+        />
+      )}
       <div className="flex flex-col my-2 ml-6">
-        <h2 className="text-[18px] font-normal ml-3 mb-4">
-          <span className="text-brand font-medium ">{users[0].name}</span> is
-          currently reading
-        </h2>
+        {user && (
+          <h2 className="text-[18px] font-normal ml-3 mb-4">
+            <span className="text-brand font-medium ">{user.name}</span> is
+            currently reading
+          </h2>
+        )}
         <div className="flex flex-row gap-4">
           <Image
-            src={book.thumbnail}
+            src={book.thumbnail || '/icons/book-open.svg'}
             alt={book.title}
             width={90}
             height={130}
