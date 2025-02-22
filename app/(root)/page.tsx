@@ -1,14 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import BookStatusCard from '@/components/BookStatusCard';
 import Feed from '@/components/Feed';
 import { getCurrentUser } from '@/lib/actions/user.actions';
-import { getUserBooksByStatus } from '@/lib/actions/book.actions';
-import { Book } from '@/types';
+import {
+  getUserBookActivity,
+  getUserBooksByStatus,
+} from '@/lib/actions/book.actions';
+import { transformDocumentListToBooks } from '@/lib/utils';
 
 const Home = async () => {
   const user = await getCurrentUser();
+  const bookActivity = await getUserBookActivity({ userId: user.$id });
+  const count = bookActivity?.length;
 
   const [currentlyReadingBooks, readBooks, wantToReadBooks] = await Promise.all(
     [
@@ -27,26 +31,15 @@ const Home = async () => {
     ]
   );
 
-  const transformDocumentListToBooks = (documentList: any): Book[] => {
-    return documentList.documents.map((doc: any) => ({
-      $id: doc.$id,
-      name: doc.name,
-      author: doc.author,
-      description: doc.description,
-      rating: doc.rating,
-      numberRatings: doc.numberRatings,
-      pageCount: doc.pageCount,
-      publishedDate: doc.publishedDate,
-      categories: doc.categories,
-      coverImage: doc.coverImage,
-    }));
-  };
-
   return (
     <section className="flex mb-12 mt-36 ml-24">
-      <Feed user={user} />
+      <Feed feed={bookActivity} />
       <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
-        <ReadingChallenge userId={user.$id} goal={user.readingGoal} />
+        <ReadingChallenge
+          userId={user.$id}
+          goal={user.readingGoal}
+          readBookCount={count!}
+        />
         <BookStatusCard
           title="Currently Reading"
           books={transformDocumentListToBooks(currentlyReadingBooks)}

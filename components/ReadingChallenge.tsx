@@ -17,11 +17,13 @@ import { setReadingGoal } from '@/lib/actions/user.actions';
 const ReadingChallenge = ({
   goal,
   userId,
+  readBookCount,
 }: {
   goal?: number | null;
   userId: string;
+  readBookCount: number;
 }) => {
-  const [progress, setProgress] = useState(13);
+  const [progress, setProgress] = useState(goal ? 13 : 0);
   const [currentGoal, setCurrentGoal] = useState(goal || 1);
   const [inputValue, setInputValue] = useState(String(currentGoal));
   const [isOpen, setIsOpen] = useState(false);
@@ -91,8 +93,10 @@ const ReadingChallenge = ({
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(50), 500);
-    return () => clearTimeout(timer);
+    if (goal) {
+      const timer = setTimeout(() => setProgress(readBookCount / goal), 500);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
@@ -105,7 +109,9 @@ const ReadingChallenge = ({
           <>
             <h1 className="h1 text-brand-100">{progress}%</h1>
             <Progress value={progress} className="w-[60%] my-3" />
-            <p className="font-regular text-[16px]">6 books completed</p>
+            <p className="font-regular text-[16px]">
+              {readBookCount} books completed
+            </p>
           </>
         ) : (
           <>

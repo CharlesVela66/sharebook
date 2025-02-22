@@ -2,16 +2,15 @@ import EditProfile from '@/components/EditProfile';
 import Feed from '@/components/Feed';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import StatusCard from '@/components/StatusCard';
-import { usersBooks } from '@/constants';
+import { getUserBookActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import Image from 'next/image';
 import React from 'react';
 
 const Profile = async () => {
   const user = await getCurrentUser();
-  const count = usersBooks.filter(
-    (userBook) => userBook.idUser === user.id
-  ).length;
+  const bookActivity = await getUserBookActivity({ userId: user.$id });
+  const count = bookActivity?.length;
   return (
     <section className="flex flex-col mb-12 mt-36 mx-12">
       <div className="flex justify-between w-full mb-4">
@@ -38,7 +37,11 @@ const Profile = async () => {
           <EditProfile user={user} />
         </div>
         <div className="max-w-[420px] w-full">
-          <ReadingChallenge goal={user.readingGoal} userId={user.$id} />
+          <ReadingChallenge
+            goal={user.readingGoal}
+            userId={user.$id}
+            readBookCount={count!}
+          />
         </div>
       </div>
       <div className="flex w-full mb-12 justify-between gap-4">
@@ -49,7 +52,7 @@ const Profile = async () => {
         />
         <StatusCard status="Want To Read" imageSrc="/icons/book-closed.svg" />
       </div>
-      <Feed user={user} className="items-center justify-center" />
+      <Feed feed={bookActivity} className="items-center justify-center" />
     </section>
   );
 };

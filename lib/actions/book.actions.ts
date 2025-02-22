@@ -4,7 +4,8 @@ import { BookResponse } from '@/types';
 import { z } from 'zod';
 import { createAdminClient } from '../appwrite';
 import { appwriteConfig } from '../appwrite/config';
-import { Query } from 'node-appwrite';
+import { ID, Query } from 'node-appwrite';
+import { revalidatePath } from 'next/cache';
 
 // We use zod to validate the input value
 const searchSchema = z.object({
@@ -107,42 +108,94 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
   }
 };
 
-export const getUserFeed = async ({ userId }: { userId: string }) => {
-  const { databases } = await createAdminClient();
-
-  const result = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.bookActivityCollectionId,
-    [Query.equal('userId', userId)]
-  );
-
-  return result.total > 0 ? result.documents[0] : null;
-};
-
-export const getAllUserBooks = async ({ userId }: { userId: string }) => {
-  const { databases } = await createAdminClient();
-
-  const result = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.bookActivityCollectionId,
-    [Query.equal('userId', [userId])]
-  );
-  return result;
-};
-
 export const getUserBooksByStatus = async ({
   userId,
   bookStatus,
 }: {
   userId: string;
-  bookStatus: string;
+  bookStatus?: string;
 }) => {
   const { databases } = await createAdminClient();
+
+  const queries = [Query.equal('userId', [userId])];
+
+  if (bookStatus) {
+    queries.push(Query.equal('status', [bookStatus]));
+  }
 
   const result = await databases.listDocuments(
     appwriteConfig.databaseId,
     appwriteConfig.bookActivityCollectionId,
-    [Query.equal('userId', [userId]), Query.equal('status', [bookStatus])]
+    queries
   );
   return result;
+};
+
+export const getUserBookActivity = async ({ userId }: { userId: string }) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const bookActivity = databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.bookActivityCollectionId,
+      [Query.equal('userId', userId)]
+    );
+
+    return (await bookActivity).documents;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const setUserBookActivity = async ({
+  userId,
+  bookId,
+  status,
+  rating,
+  type,
+}: {
+  userId: string;
+  bookId: string;
+  status?: string | null;
+  rating?: number | null;
+  type: 'create' | 'update';
+}) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    if (type === 'create') {
+      await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.bookActivityCollectionId,
+        ID.unique(),
+        {
+          userId,
+          bookId,
+          status,
+          rating,
+        }
+      );
+    } else {
+      const document = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.bookActivityCollectionId,
+        [Query.equal('userId', userId), Query.equal('bookId', bookId)]
+      );
+      const documentId = document.documents[0].$id;
+
+      await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.bookActivityCollectionId,
+        documentId,
+        {
+          status,
+          rating,
+        }
+      );
+    }
+    revalidatePath('/');
+    return { success: true, message: 'Book activity created successfully' };
+  } catch (error) {
+    console.error(error);
+  }
 };
