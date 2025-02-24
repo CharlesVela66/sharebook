@@ -65,3 +65,14 @@ export const fixStatusTexts = (status: string) => {
       return { activityText: 'has read', buttonText: 'Read' };
   }
 };
+
+export const transformStatusParams = (status: string) => {
+  switch (status) {
+    case 'read':
+      return 'Read';
+    case 'currently-reading':
+      return 'CurrentlyReading';
+    case 'want-to-read':
+      return 'WantToRead';
+  }
+};
