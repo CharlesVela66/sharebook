@@ -8,8 +8,8 @@ const SearchBooks = async ({
 }: {
   params: Promise<{ searchTerm: string }>;
 }) => {
-  const resolvedParams = await params;
-  const decodedSearchTerm = decodeURIComponent(resolvedParams.searchTerm);
+  const param = await params;
+  const decodedSearchTerm = decodeURIComponent(param.searchTerm);
 
   const user = await getCurrentUser();
   const books = (await getBooks({ searchTerm: decodedSearchTerm })).books;

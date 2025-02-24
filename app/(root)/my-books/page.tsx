@@ -11,7 +11,7 @@ const MyBooks = async () => {
   const transformedBooks = transformBookResponse(books);
 
   return (
-    <div className="mb-12 mt-36 mx-12">
+    <section className="mb-12 mt-36 mx-12">
       {transformedBooks.length > 0 ? (
         <>
           {transformedBooks.map((book: Book) => (
@@ -21,7 +21,7 @@ const MyBooks = async () => {
       ) : (
         <p>El usuario no ha tenido actividad</p>
       )}
-    </div>
+    </section>
   );
 };
 

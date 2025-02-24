@@ -10,10 +10,12 @@ const MyBooksByStatus = async ({
 }: {
   params: { bookStatus: string };
 }) => {
+  const param = await params;
+
   const user = await getCurrentUser();
   const books = await getUserBooksByStatus({
     userId: user.$id,
-    bookStatus: `${transformStatusParams(params.bookStatus)}`,
+    bookStatus: `${transformStatusParams(param.bookStatus)}`,
   });
   const transformedBooks = transformBookResponse(books);
 
