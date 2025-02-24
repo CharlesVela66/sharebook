@@ -4,6 +4,7 @@ import { Book, User } from '@/types';
 import { getUserBookActivity } from '@/lib/actions/book.actions';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts } from '@/lib/utils';
+import Link from 'next/link';
 
 interface BookCardProps {
   book: Book;
@@ -39,7 +40,8 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
             {text?.activityText}
           </h2>
         )}
-        <div
+        <Link
+          href={`/book/${book.id}`}
           className={`flex flex-row gap-4 ${type === 'search' ? 'mt-6' : ''}`}
         >
           <div className="relative w-[100px] h-[155px] flex-shrink-0">
@@ -62,7 +64,7 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
               {book.description}
             </p>
           </div>
-        </div>
+        </Link>
         <div className="flex justify-between items-end">
           {type === 'search' && (
             <p className="w-full mt-2 text-[16px] italic font-light">

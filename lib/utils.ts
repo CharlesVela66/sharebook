@@ -76,3 +76,34 @@ export const transformStatusParams = (status: string) => {
       return 'WantToRead';
   }
 };
+
+/**
+ * Cleans book descriptions by removing HTML tags and normalizing content
+ * @param {string} description - The HTML-formatted description text from Google Books API
+ * @returns {string} - Clean description with HTML tags removed
+ */
+export const cleanBookDescription = (
+  description: string | undefined
+): string => {
+  if (!description) return '';
+
+  // Remove HTML tags
+  let cleanText = description.replace(/<[^>]*>/g, '');
+
+  // Replace common HTML entities
+  cleanText = cleanText
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
+    .replace(/&hellip;/g, '...');
+
+  // Normalize whitespace (replace multiple spaces, newlines, tabs with single space)
+  cleanText = cleanText.replace(/\s+/g, ' ').trim();
+
+  return cleanText;
+};

@@ -6,6 +6,7 @@ import { createAdminClient } from '../appwrite';
 import { appwriteConfig } from '../appwrite/config';
 import { ID, Query } from 'node-appwrite';
 import { revalidatePath } from 'next/cache';
+import { cleanBookDescription } from '../utils';
 
 // We use zod to validate the input value
 const searchSchema = z.object({
@@ -126,6 +127,7 @@ export const getUserBooksByStatus = async ({
 
     // Build queries for Appwrite
     const queries = [Query.equal('userId', [userId])];
+    queries.push(Query.orderDesc('$updatedAt'));
     if (bookStatus) {
       queries.push(Query.equal('status', [bookStatus]));
     }
@@ -183,7 +185,7 @@ export const getUserBooksByStatus = async ({
       id: book.id,
       title: book.volumeInfo?.title || 'Untitled',
       authors: book.volumeInfo?.authors || [],
-      description: book.volumeInfo?.description || '',
+      description: cleanBookDescription(book.volumeInfo?.description),
       pageCount: book.volumeInfo?.pageCount || 0,
       publishedDate: book.volumeInfo?.publishedDate || '',
       categories: book.volumeInfo?.categories || [],
@@ -272,7 +274,7 @@ export const getUserBookActivity = async ({
         id: bookData.id,
         title: bookData.volumeInfo?.title || 'Untitled',
         authors: bookData.volumeInfo?.authors || [],
-        description: bookData.volumeInfo?.description || '',
+        description: cleanBookDescription(bookData.volumeInfo?.description),
         pageCount: bookData.volumeInfo?.pageCount || 0,
         publishedDate: bookData.volumeInfo?.publishedDate || '',
         categories: bookData.volumeInfo?.categories || [],
