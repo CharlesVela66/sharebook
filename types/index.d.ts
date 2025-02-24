@@ -10,6 +10,7 @@ declare interface Book {
   averageRating: number;
   ratingsCount: number;
   userRating?: number;
+  status?: string;
 }
 
 declare interface User {

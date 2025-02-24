@@ -10,7 +10,10 @@ import React from 'react';
 const Profile = async () => {
   const user = await getCurrentUser();
   const bookActivity = await getUserBookActivity({ userId: user.$id });
-  const count = bookActivity?.length;
+  const count = bookActivity?.filter((act) => act?.status === 'Read').length;
+
+  console.log(bookActivity);
+
   return (
     <section className="flex flex-col mb-12 mt-36 mx-12">
       <div className="flex justify-between w-full mb-4">
@@ -52,7 +55,11 @@ const Profile = async () => {
         />
         <StatusCard status="Want To Read" imageSrc="/icons/book-closed.svg" />
       </div>
-      <Feed feed={bookActivity} className="items-center justify-center" />
+      <Feed
+        feed={bookActivity}
+        user={user}
+        className="w-full items-center justify-center"
+      />
     </section>
   );
 };

@@ -94,10 +94,13 @@ const ReadingChallenge = ({
 
   useEffect(() => {
     if (goal) {
-      const timer = setTimeout(() => setProgress(readBookCount / goal), 500);
+      const timer = setTimeout(
+        () => setProgress(Math.round((readBookCount / goal) * 100)),
+        500
+      );
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [readBookCount]);
 
   return (
     <>

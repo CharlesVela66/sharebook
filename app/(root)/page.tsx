@@ -12,7 +12,7 @@ import { transformBookResponse } from '@/lib/utils';
 const Home = async () => {
   const user = await getCurrentUser();
   const bookActivity = await getUserBookActivity({ userId: user.$id });
-  const count = bookActivity?.length;
+  const count = bookActivity?.filter((act) => act?.status === 'Read').length;
 
   const [currentlyReadingBooks, readBooks, wantToReadBooks] = await Promise.all(
     [

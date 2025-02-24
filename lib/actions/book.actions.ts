@@ -206,19 +206,93 @@ export const getUserBooksByStatus = async ({
   }
 };
 
-export const getUserBookActivity = async ({ userId }: { userId: string }) => {
+export const getUserBookActivity = async ({
+  userId,
+  bookId,
+}: {
+  userId: string;
+  bookId?: string;
+}) => {
   try {
     const { databases } = await createAdminClient();
+    const apiKey = process.env.GOOGLE_BOOKS_API;
 
-    const bookActivity = databases.listDocuments(
+    if (!apiKey) {
+      throw new Error('Google Books API key is not configured');
+    }
+
+    // Build queries for Appwrite
+    const queries = [Query.equal('userId', [userId])];
+    queries.push(Query.orderDesc('$updatedAt'));
+
+    if (bookId) {
+      queries.push(Query.equal('bookId', [bookId]));
+    }
+
+    // Get user's book activities from Appwrite
+    const result = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.bookActivityCollectionId,
-      [Query.equal('userId', userId)]
+      queries
     );
 
-    return (await bookActivity).documents;
+    if (result.documents.length === 0) {
+      return [];
+    }
+
+    // Extract book IDs and create a map for activities (status and rating)
+    const bookIds = result.documents.map((doc: any) => doc.bookId);
+    const userActivities = new Map(
+      result.documents.map((doc: any) => [
+        doc.bookId,
+        { status: doc.status, rating: doc.rating },
+      ])
+    );
+
+    // Fetch books from Google Books API
+    const bookPromises = bookIds.map(async (id) => {
+      const url = new URL(`https://www.googleapis.com/books/v1/volumes/${id}`);
+      url.searchParams.append('key', apiKey);
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`Failed to fetch book ${id}: ${response.statusText}`);
+        return null;
+      }
+
+      const bookData = await response.json();
+      const userActivity = userActivities.get(id);
+
+      return {
+        id: bookData.id,
+        title: bookData.volumeInfo?.title || 'Untitled',
+        authors: bookData.volumeInfo?.authors || [],
+        description: bookData.volumeInfo?.description || '',
+        pageCount: bookData.volumeInfo?.pageCount || 0,
+        publishedDate: bookData.volumeInfo?.publishedDate || '',
+        categories: bookData.volumeInfo?.categories || [],
+        thumbnail:
+          bookData.volumeInfo?.imageLinks?.thumbnail?.replace(
+            'http:',
+            'https:'
+          ) || '',
+        averageRating: bookData.volumeInfo?.averageRating || 0,
+        ratingsCount: bookData.volumeInfo?.ratingsCount || 0,
+        status: userActivity?.status || null,
+        userRating: userActivity?.rating || 0,
+      };
+    });
+
+    const books = (await Promise.all(bookPromises)).filter(Boolean);
+    return books;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching book activity:', error);
+    return [];
   }
 };
 

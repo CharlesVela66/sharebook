@@ -52,3 +52,16 @@ export const transformBookResponse = (response: any): Book[] => {
     userRating: book.userRating,
   }));
 };
+export const fixStatusTexts = (status: string) => {
+  switch (status) {
+    case 'WantToRead':
+      return { activityText: 'wants to read', buttonText: 'Want To Read' };
+    case 'CurrentlyReading':
+      return {
+        activityText: 'is currently reading',
+        buttonText: 'Currently Re...',
+      };
+    case 'Read':
+      return { activityText: 'has read', buttonText: 'Read' };
+  }
+};

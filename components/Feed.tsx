@@ -17,7 +17,7 @@ const Feed = async ({
       {feed.length > 0 ? (
         <div className={cn('flex flex-col w-full', className)}>
           {feed.map((book: Book) => (
-            <BookCard key={book.id} book={book} user={user} />
+            <BookCard key={book.id} book={book} user={user} type="feed" />
           ))}
         </div>
       ) : (

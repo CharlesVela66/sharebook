@@ -15,8 +15,8 @@ export default {
           DEFAULT: '#FFCC00',
         },
         green: {
-          '100': '#46B44A',
-          '200': '#348B37',
+          DEFAULT: '#46B44A',
+          '100': '#348B37',
         },
         light: {
           '100': '#333F4E',
@@ -42,5 +42,6 @@ export default {
     },
   },
 
-  plugins: [],
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require('@tailwindcss/line-clamp')],
 } satisfies Config;

@@ -1,5 +1,6 @@
 import BookCard from '@/components/BookCard';
 import { getBooks } from '@/lib/actions/book.actions';
+import { getCurrentUser } from '@/lib/actions/user.actions';
 import React from 'react';
 
 const SearchBooks = async ({
@@ -10,6 +11,7 @@ const SearchBooks = async ({
   const resolvedParams = await params;
   const decodedSearchTerm = decodeURIComponent(resolvedParams.searchTerm);
 
+  const user = await getCurrentUser();
   const books = (await getBooks({ searchTerm: decodedSearchTerm })).books;
 
   return (
@@ -17,7 +19,7 @@ const SearchBooks = async ({
       {books ? (
         <ul>
           {books.map((book) => (
-            <BookCard book={book} key={book.id} />
+            <BookCard user={user} book={book} key={book.id} type="search" />
           ))}
         </ul>
       ) : (
