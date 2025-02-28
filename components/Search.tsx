@@ -7,14 +7,8 @@ import { useDebounce } from 'use-debounce';
 import { getBooks } from '@/lib/actions/book.actions';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-type Book = {
-  id: string;
-  title: string;
-  authors: string[];
-  thumbnail: string;
-  averageRating: number;
-};
+import Link from 'next/link';
+import { Book } from '@/types';
 
 const Search = () => {
   const [query, setQuery] = useState<string>('');
@@ -117,7 +111,10 @@ const Search = () => {
             {results.length > 0 ? (
               results.map((book) => (
                 <li key={book.id} className="flex items-center justify-between">
-                  <div className="flex cursor-pointer items-center gap-4">
+                  <Link
+                    href={`/book/${book.id}`}
+                    className="flex cursor-pointer items-center gap-4"
+                  >
                     <Image
                       src={book.thumbnail || '/icons/book-open.svg'}
                       alt={book.title || 'book'}
@@ -136,7 +133,7 @@ const Search = () => {
                         </span>
                       </p>
                     </div>
-                  </div>
+                  </Link>
                   {book.averageRating > 0 && (
                     <div className="flex gap-2 mx-2 items-center">
                       <Image

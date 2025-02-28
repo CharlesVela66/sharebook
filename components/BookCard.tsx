@@ -7,6 +7,7 @@ import { fixStatusTexts } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import Rating from './Rating';
 
 interface BookCardProps {
   book: Book;
@@ -37,10 +38,22 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
       )}
       <div className="flex flex-col my-2 ml-6">
         {type === 'feed' && (
-          <h2 className="text-[18px] font-normal ml-3 mb-4">
-            <span className="text-brand font-medium ">{user.name}</span>{' '}
-            {text?.activityText}
-          </h2>
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              <h2 className="text-[18px] font-normal ml-3 mb-4">
+                <span className="text-brand font-medium ">{user.name}</span>{' '}
+                {book.userRating ? `rated a book` : text?.activityText}
+              </h2>
+              {book.userRating! > 0 && (
+                <Rating
+                  bookAvgRating={book.userRating}
+                  starSize={24}
+                  className="relative -top-1"
+                />
+              )}
+            </div>
+            <p className="mx-4 font-light">5d</p>
+          </div>
         )}
         <Link
           href={`/book/${book.id}`}
