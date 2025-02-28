@@ -10,19 +10,18 @@ import {
 } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { fixStatusTexts } from '@/lib/utils';
-import Image from 'next/image';
-import { Separator } from './ui/separator';
 import { setUserBookActivity } from '@/lib/actions/book.actions';
 
 const BookStatusModal = ({
   status,
   userId,
   bookId,
+  trigger,
 }: {
   status: string;
   userId: string;
   bookId: string;
+  trigger: React.ReactNode;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,34 +52,9 @@ const BookStatusModal = ({
     }
   };
 
-  const text = fixStatusTexts(status);
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className={`${
-            !status
-              ? 'text-black bg-white border-[2px] border-dark-300'
-              : status === 'WantToRead'
-              ? 'text-white bg-dark-300'
-              : status === 'CurrentlyReading'
-              ? 'text-white bg-brand-100'
-              : 'text-white bg-green'
-          } rounded-lg flex items-center gap-2 w-[150px]`}
-        >
-          {status ? text?.buttonText : 'Want To Read'}
-          <Separator orientation="vertical" className="bg-current" />
-          <Image
-            src={
-              status ? '/icons/select-icon.svg' : '/icons/select-icon-black.svg'
-            }
-            alt="select icon"
-            width={12}
-            height={12}
-          />
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-[512px] bg-white flex flex-col items-center">
         <DialogHeader>
           <DialogTitle className="text-center text-[24px] mb-2 font-bold">

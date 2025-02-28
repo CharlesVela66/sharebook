@@ -5,6 +5,8 @@ import { getUserBookActivity } from '@/lib/actions/book.actions';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts } from '@/lib/utils';
 import Link from 'next/link';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
 
 interface BookCardProps {
   book: Book;
@@ -80,6 +82,32 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
               status={status}
               userId={user.$id}
               bookId={book.id}
+              trigger={
+                <Button
+                  className={`${
+                    !status
+                      ? 'text-black bg-white border-[2px] border-dark-300'
+                      : status === 'WantToRead'
+                      ? 'text-white bg-dark-300'
+                      : status === 'CurrentlyReading'
+                      ? 'text-white bg-brand-100'
+                      : 'text-white bg-green'
+                  } rounded-lg flex items-center gap-2 w-[150px]`}
+                >
+                  {status ? text?.buttonText : 'Want To Read'}
+                  <Separator orientation="vertical" className="bg-current" />
+                  <Image
+                    src={
+                      status
+                        ? '/icons/select-icon.svg'
+                        : '/icons/select-icon-black.svg'
+                    }
+                    alt="select icon"
+                    width={12}
+                    height={12}
+                  />
+                </Button>
+              }
             />
           </div>
         </div>

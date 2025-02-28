@@ -12,8 +12,6 @@ const Profile = async () => {
   const bookActivity = await getUserBookActivity({ userId: user.$id });
   const count = bookActivity?.filter((act) => act?.status === 'Read').length;
 
-  console.log(bookActivity);
-
   return (
     <section className="flex flex-col mb-12 mt-36 mx-12">
       <div className="flex justify-between w-full mb-4">
