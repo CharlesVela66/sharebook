@@ -2,15 +2,25 @@ import EditProfile from '@/components/EditProfile';
 import Feed from '@/components/Feed';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import StatusCard from '@/components/StatusCard';
-import { getUserBookActivity } from '@/lib/actions/book.actions';
+import { getUserActivity } from '@/lib/actions/books.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import Image from 'next/image';
 import React from 'react';
 
 const Profile = async () => {
   const user = await getCurrentUser();
-  const bookActivity = await getUserBookActivity({ userId: user.$id });
+  const response = await getUserActivity({ userId: user.$id });
+  const bookActivity = response.books;
   const count = bookActivity?.filter((act) => act?.status === 'Read').length;
+
+  const formattedFeed = [
+    {
+      userId: user.$id,
+      userName: user.name,
+      userProfilePic: user.profilePic || '/images/profile-pic.jpg',
+      books: bookActivity || [],
+    },
+  ];
 
   return (
     <section className="flex flex-col mb-12 mt-36 mx-12">
@@ -54,7 +64,7 @@ const Profile = async () => {
         <StatusCard status="Want To Read" imageSrc="/icons/book-closed.svg" />
       </div>
       <Feed
-        feed={bookActivity}
+        feed={formattedFeed}
         user={user}
         className="w-full items-center justify-center"
       />

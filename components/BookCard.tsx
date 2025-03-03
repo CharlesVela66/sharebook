@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import { Book, User } from '@/types';
+import { Book, UserCardProps } from '@/types';
 import { getUserBookActivity } from '@/lib/actions/book.actions';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts } from '@/lib/utils';
@@ -11,7 +11,7 @@ import Rating from './Rating';
 
 interface BookCardProps {
   book: Book;
-  user: User;
+  user: UserCardProps;
   type: 'feed' | 'search';
 }
 

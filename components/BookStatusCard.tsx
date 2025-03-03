@@ -3,12 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-interface BookStatusCardProps {
-  title: string;
-  books: Book[];
-}
-
-const BookStatusCard = ({ title, books }: BookStatusCardProps) => {
+const BookStatusCard = ({ title, books }: { title: string; books: Book[] }) => {
   return (
     <>
       <h3 className="font-semibold text-[20px] my-2">{title}</h3>

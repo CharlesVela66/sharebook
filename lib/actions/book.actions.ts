@@ -13,32 +13,42 @@ const searchSchema = z.object({
   searchTerm: z.string().min(1, 'Search term cannot be empty'),
 });
 
-// Get Books from the API by search term
-export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
+export const getBooks = async ({
+  searchTerm,
+  bookId,
+  maxResults,
+}: {
+  searchTerm?: string;
+  bookId?: string;
+  maxResults?: number;
+}) => {
   try {
-    // Validate the input
-    const validated = searchSchema.parse({ searchTerm });
-
-    // Retrieve the API KEY
     const apiKey = process.env.GOOGLE_BOOKS_API;
 
-    // If there's an issue with the API Key send and error
     if (!apiKey) {
       throw new Error('Google Books API key is not configured');
     }
 
-    // Construct the URL for the API
-    const url = new URL('https://www.googleapis.com/books/v1/volumes');
-    // Search term
-    url.searchParams.append('q', validated.searchTerm);
-    // Max results
-    url.searchParams.append('maxResults', '20');
-    // Order by relevance
-    url.searchParams.append('orderBy', 'relevance');
-    // Only books
-    url.searchParams.append('printType', 'books');
-    // Append the key for authorization
-    url.searchParams.append('key', apiKey);
+    let url = new URL('https://www.googleapis.com/books/v1/volumes');
+    let isSingleBookRequest = false;
+
+    if (searchTerm) {
+      const validated = searchSchema.parse({ searchTerm });
+      url.searchParams.append('q', validated.searchTerm);
+      // Max results
+      url.searchParams.append('maxResults', maxResults?.toString() || '20');
+      // Order by relevance
+      url.searchParams.append('orderBy', 'relevance');
+      // Only books
+      url.searchParams.append('printType', 'books');
+      url.searchParams.append('key', apiKey);
+    } else if (bookId) {
+      url = new URL(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
+      url.searchParams.append('key', apiKey);
+      isSingleBookRequest = true;
+    } else {
+      throw new Error('No parameter was passed to the function');
+    }
 
     // Make the GET request to the API
     const response = await fetch(url.toString(), {
@@ -55,8 +65,37 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
     // Transform the data to a json format
     const data = await response.json();
 
+    // Handle single book request differently from search results
+    if (isSingleBookRequest) {
+      // For single book request, create a book object directly
+      const book = {
+        id: data.id,
+        title: data.volumeInfo?.title || 'Untitled',
+        authors: data.volumeInfo?.authors || [],
+        description: cleanBookDescription(data.volumeInfo?.description), // Make sure this function is defined
+        pageCount: data.volumeInfo?.pageCount || 0,
+        publishedDate: data.volumeInfo?.publishedDate || '',
+        categories: data.volumeInfo?.categories || [],
+        thumbnail:
+          data.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') ||
+          '',
+        averageRating: data.volumeInfo?.averageRating || 0,
+        ratingsCount: data.volumeInfo?.ratingsCount || 0,
+        status: null,
+        userRating: null,
+      };
+
+      return { success: true, books: [book] };
+    }
+
+    // For search results, process the items array
     // Create a book map to don't repeat book titles
     const bookMap = new Map();
+
+    // Check if data.items exists before trying to iterate
+    if (!data.items || !Array.isArray(data.items)) {
+      return { success: true, books: [] };
+    }
 
     // Iterate over the whole data to save unique book titles
     data.items.forEach((book: BookResponse) => {
@@ -70,7 +109,7 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
         id: book.id,
         title: book.volumeInfo?.title || 'Untitled',
         authors: book.volumeInfo?.authors || [],
-        description: book.volumeInfo?.description || '',
+        description: cleanBookDescription(book.volumeInfo?.description),
         pageCount: book.volumeInfo?.pageCount || 0,
         publishedDate: book.volumeInfo?.publishedDate || '',
         categories: book.volumeInfo?.categories || [],
@@ -79,6 +118,8 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
           '',
         averageRating: book.volumeInfo?.averageRating || 0,
         ratingsCount: book.volumeInfo?.ratingsCount || 0,
+        status: null,
+        userRating: null,
       };
 
       if (!existingBook) {
@@ -101,11 +142,8 @@ export const getBooks = async ({ searchTerm }: { searchTerm: string }) => {
 
     return { success: true, books };
   } catch (error) {
-    console.error('Error fetching books:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch books',
-    };
+    console.error(error);
+    return { success: false, books: [] };
   }
 };
 
@@ -238,7 +276,10 @@ export const getUserBookActivity = async ({
       queries
     );
 
-    if (result.documents.length === 0) {
+    if (result.documents.length === 0 && bookId) {
+      const book = await getBooks({ bookId: bookId });
+      return book?.books || [];
+    } else if (result.documents.length === 0) {
       return [];
     }
 

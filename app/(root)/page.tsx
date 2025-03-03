@@ -3,30 +3,31 @@ import ReadingChallenge from '@/components/ReadingChallenge';
 import BookStatusCard from '@/components/BookStatusCard';
 import Feed from '@/components/Feed';
 import { getCurrentUser } from '@/lib/actions/user.actions';
-import {
-  getUserBookActivity,
-  getUserBooksByStatus,
-} from '@/lib/actions/book.actions';
-import { transformBookResponse } from '@/lib/utils';
+
+import { getUserActivity, getUserFeed } from '@/lib/actions/books.actions';
 
 const Home = async () => {
   const user = await getCurrentUser();
-  const bookActivity = await getUserBookActivity({ userId: user.$id });
-  const count = bookActivity?.filter((act) => act?.status === 'Read').length;
+  const response = await getUserFeed({ userId: user.$id });
+  const bookActivity = response.feed;
+  const count = bookActivity
+    .filter((feedItem) => feedItem.userId === user.$id)
+    .flatMap((feedItem) => feedItem.books)
+    .filter((book) => book.status === 'Read').length;
 
   const [currentlyReadingBooks, readBooks, wantToReadBooks] = await Promise.all(
     [
-      getUserBooksByStatus({
+      getUserActivity({
         userId: user.$id,
-        bookStatus: 'CurrentlyReading',
+        status: 'CurrentlyReading',
       }),
-      getUserBooksByStatus({
+      getUserActivity({
         userId: user.$id,
-        bookStatus: 'Read',
+        status: 'Read',
       }),
-      getUserBooksByStatus({
+      getUserActivity({
         userId: user.$id,
-        bookStatus: 'WantToRead',
+        status: 'WantToRead',
       }),
     ]
   );
@@ -42,13 +43,10 @@ const Home = async () => {
         />
         <BookStatusCard
           title="Currently Reading"
-          books={transformBookResponse(currentlyReadingBooks)}
+          books={currentlyReadingBooks.books}
         />
-        <BookStatusCard
-          title="Want To Read"
-          books={transformBookResponse(wantToReadBooks)}
-        />
-        <BookStatusCard title="Read" books={transformBookResponse(readBooks)} />
+        <BookStatusCard title="Want To Read" books={wantToReadBooks.books} />
+        <BookStatusCard title="Read" books={readBooks.books} />
       </div>
     </section>
   );

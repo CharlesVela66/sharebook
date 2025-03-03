@@ -1,4 +1,4 @@
-import { Book, FormType } from '@/types';
+import { Book, BookResponse, FormType } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { z } from 'zod';
@@ -32,25 +32,22 @@ export const authFormSchema = (formType: FormType) => {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const transformBookResponse = (response: any): Book[] => {
-  if (!response?.success || !response?.books) {
-    return [];
-  }
-
-  return response.books.map((book: Book) => ({
+export const transformBookResponse = (book: BookResponse): Book => {
+  return {
     id: book.id,
-    title: book.title,
-    authors: book.authors,
-    description: book.description,
-    pageCount: book.pageCount,
-    publishedDate: book.publishedDate,
-    categories: book.categories,
-    thumbnail: book.thumbnail,
-    averageRating: book.averageRating,
-    ratingsCount: book.ratingsCount,
-    userRating: book.userRating,
-  }));
+    title: book.volumeInfo?.title || 'Untitled',
+    authors: book.volumeInfo?.authors || [],
+    description: cleanBookDescription(book.volumeInfo?.description),
+    pageCount: book.volumeInfo?.pageCount || 0,
+    publishedDate: book.volumeInfo?.publishedDate || '',
+    categories: book.volumeInfo?.categories || [],
+    thumbnail:
+      book.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') || '',
+    averageRating: book.volumeInfo?.averageRating || 0,
+    ratingsCount: book.volumeInfo?.ratingsCount || 0,
+    status: undefined,
+    userRating: undefined,
+  };
 };
 export const fixStatusTexts = (status: string) => {
   switch (status) {

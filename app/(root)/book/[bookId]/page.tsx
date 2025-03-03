@@ -22,7 +22,13 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
     userId: user.$id,
     bookId: param.bookId,
   });
-  const book = result[0]!;
+  // Check if result exists and has at least one book
+  if (!result || result.length === 0) {
+    // Handle case where book isn't found
+    return <div>Book not found</div>;
+  }
+
+  const book = result[0];
   const text = fixStatusTexts(book?.status)?.buttonText;
 
   return (
@@ -54,7 +60,9 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
                     width={20}
                     height={20}
                   />
-                  <p className="text-[18px] font-medium">{text}</p>
+                  <p className="text-[18px] font-medium">
+                    {text || 'Want to Read'}
+                  </p>
                 </Button>
               }
             />
@@ -72,7 +80,7 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
           Rate this book
         </p>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <h1 className="text-[48px] font-bold">{book.title}</h1>
         <h3 className="text-[28px] font-normal">{book.authors?.join(', ')}</h3>
         <div className="flex gap-3 items-center ">

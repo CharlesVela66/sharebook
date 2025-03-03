@@ -4,11 +4,11 @@ import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from './ui/input';
 import { useDebounce } from 'use-debounce';
-import { getBooks } from '@/lib/actions/book.actions';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Book } from '@/types';
+import { getBooksBySearchTerm } from '@/lib/actions/books.actions';
 
 const Search = () => {
   const [query, setQuery] = useState<string>('');
@@ -32,10 +32,12 @@ const Search = () => {
       try {
         setLoading(true);
         setError('');
-        const response = await getBooks({ searchTerm: debouncedQuery });
+        const response = await getBooksBySearchTerm({
+          searchTerm: debouncedQuery,
+        });
 
         if (!response.success) {
-          throw new Error(response.error);
+          throw new Error('Failed to fetch the books by search term');
         }
 
         setResults(response.books!);

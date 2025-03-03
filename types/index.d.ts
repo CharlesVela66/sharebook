@@ -26,6 +26,12 @@ declare interface User {
   friends?: User[] | null;
 }
 
+declare interface UserCardProps {
+  $id: string;
+  name: string;
+  profilePic: string;
+}
+
 declare type BookResponse = {
   id: string;
   volumeInfo: {
@@ -41,6 +47,13 @@ declare type BookResponse = {
     averageRating: number;
     ratingsCount?: number;
   };
+};
+
+declare type Feed = {
+  userId: string;
+  userName?: string;
+  userProfilePic?: string;
+  books: Book[];
 };
 
 export type FormType = 'sign-in' | 'sign-up';
