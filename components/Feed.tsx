@@ -23,10 +23,6 @@ const Feed = async ({
               profilePic: feedItem.userProfilePic || '/images/profile-pic.jpg',
             };
 
-            {
-              console.log(feedItem.books);
-            }
-
             return feedItem.books.map((book) => (
               <BookCard
                 key={`${feedItem.userId}-${book.id}`}

@@ -47,6 +47,7 @@ export const transformBookResponse = (book: BookResponse): Book => {
     ratingsCount: book.volumeInfo?.ratingsCount || 0,
     status: undefined,
     userRating: undefined,
+    $updatedAt: undefined,
   };
 };
 export const fixStatusTexts = (status: string) => {

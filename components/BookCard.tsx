@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
 import { Book, UserCardProps } from '@/types';
-import { getUserBookActivity } from '@/lib/actions/book.actions';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts } from '@/lib/utils';
 import Link from 'next/link';
@@ -16,15 +15,9 @@ interface BookCardProps {
 }
 
 const BookCard = async ({ book, user, type }: BookCardProps) => {
-  const bookActivity = await getUserBookActivity({
-    userId: user?.$id,
-    bookId: book.id,
-  });
+  const status = book?.status;
 
-  const status = bookActivity?.[0]?.status;
-
-  const text = fixStatusTexts(status);
-
+  const text = fixStatusTexts(status!);
   return (
     <div className="max-w-[920px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
       {type === 'feed' && (
@@ -52,7 +45,7 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
                 />
               )}
             </div>
-            <p className="mx-4 font-light">5d</p>
+            <p className="mx-4 font-light">{book.$updatedAt}</p>
           </div>
         )}
         <Link
@@ -92,7 +85,7 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
             }`}
           >
             <BookStatusModal
-              status={status}
+              status={status!}
               userId={user.$id}
               bookId={book.id}
               trigger={

@@ -23,12 +23,13 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
     userId: user.$id,
     bookId: param.bookId,
   });
+
   // Check if result exists and has at least one book
-  if (!result || !Array.isArray(result.book) || result.book.length === 0) {
+  if (!result || !result.book) {
     return <div>Book not found</div>;
   }
 
-  const book = result.book[0] as Book;
+  const book = result.book as Book;
   const text = fixStatusTexts(book!.status!)?.buttonText;
 
   return (

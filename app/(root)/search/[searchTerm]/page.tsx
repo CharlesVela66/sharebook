@@ -12,8 +12,12 @@ const SearchBooks = async ({
   const decodedSearchTerm = decodeURIComponent(param.searchTerm);
 
   const user = await getCurrentUser();
-  const books = (await getBooksBySearchTerm({ searchTerm: decodedSearchTerm }))
-    .books;
+  const books = (
+    await getBooksBySearchTerm({
+      searchTerm: decodedSearchTerm,
+      userId: user.$id,
+    })
+  ).books;
 
   return (
     <div className="mb-12 mt-36 mx-12">

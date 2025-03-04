@@ -19,9 +19,11 @@ const searchSchema = z.object({
 export const getBooksBySearchTerm = async ({
   searchTerm,
   maxResults,
+  userId,
 }: {
   searchTerm: string;
   maxResults?: number;
+  userId?: string;
 }) => {
   try {
     if (!API_KEY) {
@@ -57,31 +59,43 @@ export const getBooksBySearchTerm = async ({
 
     const bookMap = new Map();
 
-    data.items.forEach((book: BookResponse) => {
-      const title = book.volumeInfo?.title?.toLowerCase().trim() || '';
-      const existingBook = bookMap.get(title);
+    const books = await Promise.all(
+      data.items.map(async (book: BookResponse) => {
+        const title = book.volumeInfo?.title?.toLowerCase().trim() || '';
+        if (!title) return null;
 
-      if (!title) return;
+        const existingBook = bookMap.get(title);
+        const currentBook = transformBookResponse(book);
 
-      const currentBook = transformBookResponse(book);
+        if (userId) {
+          const bookActivity = await getUserBookActivity({
+            userId: userId,
+            bookId: currentBook.id,
+          });
+          currentBook.userRating = bookActivity
+            ? bookActivity.userRating
+            : null;
+          currentBook.status = bookActivity ? bookActivity.status : null;
+        }
 
-      if (!existingBook) {
-        bookMap.set(title, currentBook);
-        return;
-      }
-      if (
-        currentBook.averageRating > existingBook.averageRating ||
-        (currentBook.averageRating === existingBook.averageRating &&
-          currentBook.ratingsCount > existingBook.ratingsCount)
-      ) {
-        bookMap.set(title, currentBook);
-      }
-    });
+        if (!existingBook) {
+          bookMap.set(title, currentBook);
+          return currentBook;
+        }
 
-    // Convert map back to array
-    const books = Array.from(bookMap.values());
+        if (
+          currentBook.averageRating > existingBook.averageRating ||
+          (currentBook.averageRating === existingBook.averageRating &&
+            currentBook.ratingsCount > existingBook.ratingsCount)
+        ) {
+          bookMap.set(title, currentBook);
+        }
 
-    return { success: true, books };
+        return null;
+      })
+    );
+
+    return { success: true, books: books.filter((b) => b !== null) };
   } catch (error) {
     console.error(error);
     return { success: false, books: [] };
@@ -203,6 +217,10 @@ export const getUserActivity = async ({
       response.documents.map((doc: any) => [doc.bookId, doc.status])
     );
 
+    const updatedAt = new Map(
+      response.documents.map((doc: any) => [doc.bookId, doc.$updatedAt])
+    );
+
     // Use Promise.all to wait for all async operations to complete
     const books = await Promise.all(
       bookIds.map(async (id: string) => {
@@ -210,6 +228,7 @@ export const getUserActivity = async ({
         if (result.success && result.book && !Array.isArray(result.book)) {
           result.book.userRating = userRatings.get(id) || 0;
           result.book.status = userStatus.get(id) || '';
+          result.book.$updatedAt = updatedAt.get(id) || '';
           return result.book;
         }
         return null;

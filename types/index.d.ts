@@ -11,6 +11,7 @@ declare interface Book {
   ratingsCount: number;
   userRating?: number;
   status?: string;
+  $updatedAt?: number;
 }
 
 declare interface User {
