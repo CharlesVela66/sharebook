@@ -4,12 +4,17 @@ import BookStatusCard from '@/components/BookStatusCard';
 import Feed from '@/components/Feed';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 
-import { getUserActivity, getUserFeed } from '@/lib/actions/books.actions';
+import { getUserActivity, getUserFeed } from '@/lib/actions/book.actions';
+import { Book } from '@/types';
 
 const Home = async () => {
   const user = await getCurrentUser();
   const response = await getUserFeed({ userId: user.$id });
-  const bookActivity = response.feed;
+  const bookActivity = response.feed.map((feedItem) => ({
+    ...feedItem,
+    books: feedItem.books.filter((book): book is Book => book !== null),
+  }));
+
   const count = bookActivity
     .filter((feedItem) => feedItem.userId === user.$id)
     .flatMap((feedItem) => feedItem.books)
@@ -43,10 +48,20 @@ const Home = async () => {
         />
         <BookStatusCard
           title="Currently Reading"
-          books={currentlyReadingBooks.books}
+          books={currentlyReadingBooks.books.filter(
+            (book): book is Book => book !== null
+          )}
         />
-        <BookStatusCard title="Want To Read" books={wantToReadBooks.books} />
-        <BookStatusCard title="Read" books={readBooks.books} />
+        <BookStatusCard
+          title="Want To Read"
+          books={wantToReadBooks.books.filter(
+            (book): book is Book => book !== null
+          )}
+        />
+        <BookStatusCard
+          title="Read"
+          books={readBooks.books.filter((book): book is Book => book !== null)}
+        />
       </div>
     </section>
   );

@@ -2,8 +2,9 @@ import EditProfile from '@/components/EditProfile';
 import Feed from '@/components/Feed';
 import ReadingChallenge from '@/components/ReadingChallenge';
 import StatusCard from '@/components/StatusCard';
-import { getUserActivity } from '@/lib/actions/books.actions';
+import { getUserActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
+import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
 
@@ -18,7 +19,7 @@ const Profile = async () => {
       userId: user.$id,
       userName: user.name,
       userProfilePic: user.profilePic || '/images/profile-pic.jpg',
-      books: bookActivity || [],
+      books: (bookActivity || []).filter((book): book is Book => book !== null),
     },
   ];
 

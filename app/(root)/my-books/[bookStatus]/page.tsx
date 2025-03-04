@@ -1,7 +1,7 @@
 import BookCard from '@/components/BookCard';
-import { getUserBooksByStatus } from '@/lib/actions/book.actions';
+import { getUserActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
-import { transformBookResponse, transformStatusParams } from '@/lib/utils';
+import { transformStatusParams } from '@/lib/utils';
 import { Book } from '@/types';
 import React from 'react';
 
@@ -13,19 +13,21 @@ const MyBooksByStatus = async ({
   const param = await params;
 
   const user = await getCurrentUser();
-  const books = await getUserBooksByStatus({
+  const userActivity = await getUserActivity({
     userId: user.$id,
-    bookStatus: `${transformStatusParams(param.bookStatus)}`,
+    status: `${transformStatusParams(param.bookStatus)}`,
   });
-  const transformedBooks = transformBookResponse(books);
+  const books = userActivity.books;
 
   return (
     <div className="mb-12 mt-36 mx-12">
-      {transformedBooks.length > 0 ? (
+      {books.length > 0 ? (
         <>
-          {transformedBooks.map((book: Book) => (
-            <BookCard key={book.id} book={book} user={user} type="search" />
-          ))}
+          {books
+            .filter((book): book is Book => book !== null)
+            .map((book) => (
+              <BookCard key={book.id} book={book} user={user} type="search" />
+            ))}
         </>
       ) : (
         <p>El usuario no ha tenido actividad</p>

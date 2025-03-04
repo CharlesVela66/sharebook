@@ -8,9 +8,10 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { getUserBookActivity } from '@/lib/actions/book.actions';
+import { getBookById } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import { fixStatusTexts } from '@/lib/utils';
+import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
 
@@ -18,18 +19,17 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
   const param = await params;
 
   const user = await getCurrentUser();
-  const result = await getUserBookActivity({
+  const result = await getBookById({
     userId: user.$id,
     bookId: param.bookId,
   });
   // Check if result exists and has at least one book
-  if (!result || result.length === 0) {
-    // Handle case where book isn't found
+  if (!result || !Array.isArray(result.book) || result.book.length === 0) {
     return <div>Book not found</div>;
   }
 
-  const book = result[0];
-  const text = fixStatusTexts(book?.status)?.buttonText;
+  const book = result.book[0] as Book;
+  const text = fixStatusTexts(book!.status!)?.buttonText;
 
   return (
     <section className="mb-12 mt-36 ml-12 mr-24 flex gap-8">
@@ -46,10 +46,10 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
         <BookStatusModal
           userId={user.$id}
           bookId={book.id}
-          status={book.status}
+          status={book.status!}
           trigger={
             <BookStatusModal
-              status={book.status}
+              status={book.status!}
               userId={user.$id}
               bookId={book.id}
               trigger={

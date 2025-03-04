@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { BookResponse } from '@/types';
@@ -6,128 +7,68 @@ import { createAdminClient } from '../appwrite';
 import { appwriteConfig } from '../appwrite/config';
 import { ID, Query } from 'node-appwrite';
 import { revalidatePath } from 'next/cache';
-import { cleanBookDescription } from '../utils';
+import { transformBookResponse } from '../utils';
+
+const API_KEY = process.env.GOOGLE_BOOKS_API!;
 
 // We use zod to validate the input value
 const searchSchema = z.object({
   searchTerm: z.string().min(1, 'Search term cannot be empty'),
 });
 
-export const getBooks = async ({
+export const getBooksBySearchTerm = async ({
   searchTerm,
-  bookId,
   maxResults,
 }: {
-  searchTerm?: string;
-  bookId?: string;
+  searchTerm: string;
   maxResults?: number;
 }) => {
   try {
-    const apiKey = process.env.GOOGLE_BOOKS_API;
-
-    if (!apiKey) {
+    if (!API_KEY) {
       throw new Error('Google Books API key is not configured');
     }
 
-    let url = new URL('https://www.googleapis.com/books/v1/volumes');
-    let isSingleBookRequest = false;
+    const validated = searchSchema.parse({ searchTerm });
 
-    if (searchTerm) {
-      const validated = searchSchema.parse({ searchTerm });
-      url.searchParams.append('q', validated.searchTerm);
-      // Max results
-      url.searchParams.append('maxResults', maxResults?.toString() || '20');
-      // Order by relevance
-      url.searchParams.append('orderBy', 'relevance');
-      // Only books
-      url.searchParams.append('printType', 'books');
-      url.searchParams.append('key', apiKey);
-    } else if (bookId) {
-      url = new URL(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
-      url.searchParams.append('key', apiKey);
-      isSingleBookRequest = true;
-    } else {
-      throw new Error('No parameter was passed to the function');
-    }
+    const url = new URL('https://www.googleapis.com/books/v1/volumes');
 
-    // Make the GET request to the API
+    url.searchParams.append('q', validated.searchTerm);
+    url.searchParams.append('maxResults', maxResults?.toString() || '20');
+    url.searchParams.append('orderBy', 'relevance');
+    url.searchParams.append('printType', 'books');
+    url.searchParams.append('key', API_KEY);
+
     const response = await fetch(url.toString(), {
       headers: {
         Accept: 'application/json',
       },
     });
 
-    // If there is an issue with the response, send an error
     if (!response.ok) {
       throw new Error(`API call failed: ${response.statusText}`);
     }
 
-    // Transform the data to a json format
     const data = await response.json();
-
-    // Handle single book request differently from search results
-    if (isSingleBookRequest) {
-      // For single book request, create a book object directly
-      const book = {
-        id: data.id,
-        title: data.volumeInfo?.title || 'Untitled',
-        authors: data.volumeInfo?.authors || [],
-        description: cleanBookDescription(data.volumeInfo?.description), // Make sure this function is defined
-        pageCount: data.volumeInfo?.pageCount || 0,
-        publishedDate: data.volumeInfo?.publishedDate || '',
-        categories: data.volumeInfo?.categories || [],
-        thumbnail:
-          data.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') ||
-          '',
-        averageRating: data.volumeInfo?.averageRating || 0,
-        ratingsCount: data.volumeInfo?.ratingsCount || 0,
-        status: null,
-        userRating: null,
-      };
-
-      return { success: true, books: [book] };
-    }
-
-    // For search results, process the items array
-    // Create a book map to don't repeat book titles
-    const bookMap = new Map();
 
     // Check if data.items exists before trying to iterate
     if (!data.items || !Array.isArray(data.items)) {
       return { success: true, books: [] };
     }
 
-    // Iterate over the whole data to save unique book titles
+    const bookMap = new Map();
+
     data.items.forEach((book: BookResponse) => {
       const title = book.volumeInfo?.title?.toLowerCase().trim() || '';
       const existingBook = bookMap.get(title);
 
-      // Skip empty titles
       if (!title) return;
 
-      const currentBook = {
-        id: book.id,
-        title: book.volumeInfo?.title || 'Untitled',
-        authors: book.volumeInfo?.authors || [],
-        description: cleanBookDescription(book.volumeInfo?.description),
-        pageCount: book.volumeInfo?.pageCount || 0,
-        publishedDate: book.volumeInfo?.publishedDate || '',
-        categories: book.volumeInfo?.categories || [],
-        thumbnail:
-          book.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') ||
-          '',
-        averageRating: book.volumeInfo?.averageRating || 0,
-        ratingsCount: book.volumeInfo?.ratingsCount || 0,
-        status: null,
-        userRating: null,
-      };
+      const currentBook = transformBookResponse(book);
 
       if (!existingBook) {
         bookMap.set(title, currentBook);
         return;
       }
-
-      // If there is a duplicate, keep the book with the highest rating
       if (
         currentBook.averageRating > existingBook.averageRating ||
         (currentBook.averageRating === existingBook.averageRating &&
@@ -147,102 +88,48 @@ export const getBooks = async ({
   }
 };
 
-export const getUserBooksByStatus = async ({
+export const getBookById = async ({
+  bookId,
   userId,
-  bookStatus,
 }: {
-  userId: string;
-  bookStatus?: string;
+  bookId: string;
+  userId?: string;
 }) => {
   try {
-    // Get the admin client and API key
-    const { databases } = await createAdminClient();
-    const apiKey = process.env.GOOGLE_BOOKS_API;
-
-    if (!apiKey) {
-      throw new Error('Google Books API key is not configured');
-    }
-
-    // Build queries for Appwrite
-    const queries = [Query.equal('userId', [userId])];
-    queries.push(Query.orderDesc('$updatedAt'));
-    if (bookStatus) {
-      queries.push(Query.equal('status', [bookStatus]));
-    }
-
-    // Get user's book activities from Appwrite
-    const result = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.bookActivityCollectionId,
-      queries
+    const url = new URL(
+      `https://www.googleapis.com/books/v1/volumes/${bookId}`
     );
+    url.searchParams.append('key', API_KEY);
 
-    // If no books found, return empty array
-    if (result.documents.length === 0) {
-      return { success: true, books: [] };
+    // Make the GET request to the API
+    const response = await fetch(url.toString(), {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    // If there is an issue with the response, send an error
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.statusText}`);
     }
 
-    // Extract book IDs and create a map for ratings
-    const bookIds = result.documents.map((doc: any) => doc.bookId);
-    const userRatings = new Map(
-      result.documents.map((doc: any) => [doc.bookId, doc.rating])
-    );
+    const data = await response.json();
 
-    // Fetch books from Google Books API in batches
-    const batchSize = 10; // Google Books API allows up to 10 volumes per request
-    const bookBatches = [];
+    const book = transformBookResponse(data);
 
-    for (let i = 0; i < bookIds.length; i += batchSize) {
-      const batchIds = bookIds.slice(i, i + batchSize);
-      const batchPromises = batchIds.map(async (id) => {
-        const url = new URL(
-          `https://www.googleapis.com/books/v1/volumes/${id}`
-        );
-        url.searchParams.append('key', apiKey);
-
-        const response = await fetch(url.toString(), {
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          console.error(`Failed to fetch book ${id}: ${response.statusText}`);
-          return null;
-        }
-
-        return response.json();
+    if (userId) {
+      const bookActivity = await getUserBookActivity({
+        userId: userId,
+        bookId: bookId,
       });
-
-      const batchResults = await Promise.all(batchPromises);
-      bookBatches.push(...batchResults.filter(Boolean));
+      book.userRating = bookActivity!.userRating;
+      book.status = bookActivity!.status;
     }
 
-    // Transform the books data
-    const books = bookBatches.map((book: BookResponse) => ({
-      id: book.id,
-      title: book.volumeInfo?.title || 'Untitled',
-      authors: book.volumeInfo?.authors || [],
-      description: cleanBookDescription(book.volumeInfo?.description),
-      pageCount: book.volumeInfo?.pageCount || 0,
-      publishedDate: book.volumeInfo?.publishedDate || '',
-      categories: book.volumeInfo?.categories || [],
-      thumbnail:
-        book.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') ||
-        '',
-      averageRating: book.volumeInfo?.averageRating || 0,
-      ratingsCount: book.volumeInfo?.ratingsCount || 0,
-      userRating: userRatings.get(book.id) || 0, // Add user's rating
-    }));
-
-    return { success: true, books };
+    return { success: true, book: book };
   } catch (error) {
-    console.error('Error fetching user books:', error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : 'Failed to fetch user books',
-    };
+    console.error(error);
+    return { success: false, book: [] };
   }
 };
 
@@ -251,91 +138,176 @@ export const getUserBookActivity = async ({
   bookId,
 }: {
   userId: string;
-  bookId?: string;
+  bookId: string;
 }) => {
   try {
     const { databases } = await createAdminClient();
-    const apiKey = process.env.GOOGLE_BOOKS_API;
 
-    if (!apiKey) {
-      throw new Error('Google Books API key is not configured');
-    }
+    const queries = [
+      Query.equal('userId', [userId]),
+      Query.equal('bookId', [bookId]),
+    ];
 
-    // Build queries for Appwrite
-    const queries = [Query.equal('userId', [userId])];
-    queries.push(Query.orderDesc('$updatedAt'));
-
-    if (bookId) {
-      queries.push(Query.equal('bookId', [bookId]));
-    }
-
-    // Get user's book activities from Appwrite
-    const result = await databases.listDocuments(
+    const response = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.bookActivityCollectionId,
       queries
     );
 
-    if (result.documents.length === 0 && bookId) {
-      const book = await getBooks({ bookId: bookId });
-      return book?.books || [];
-    } else if (result.documents.length === 0) {
-      return [];
+    // If no activity found, return null
+    if (response.documents.length === 0) {
+      return null;
     }
 
-    // Extract book IDs and create a map for activities (status and rating)
-    const bookIds = result.documents.map((doc: any) => doc.bookId);
-    const userActivities = new Map(
-      result.documents.map((doc: any) => [
-        doc.bookId,
-        { status: doc.status, rating: doc.rating },
-      ])
+    return response.documents[0];
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getUserActivity = async ({
+  userId,
+  status,
+}: {
+  userId: string;
+  status?: string;
+}) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // Build queries for Appwrite
+    const queries = [Query.equal('userId', [userId])];
+    queries.push(Query.orderDesc('$updatedAt'));
+    if (status) {
+      queries.push(Query.equal('status', [status]));
+    }
+
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.bookActivityCollectionId,
+      queries
     );
 
-    // Fetch books from Google Books API
-    const bookPromises = bookIds.map(async (id) => {
-      const url = new URL(`https://www.googleapis.com/books/v1/volumes/${id}`);
-      url.searchParams.append('key', apiKey);
+    // If no books found, return empty array
+    if (response.documents.length === 0) {
+      return { success: true, books: [] };
+    }
 
-      const response = await fetch(url.toString(), {
-        headers: {
-          Accept: 'application/json',
-        },
+    // Extract book IDs and create a map for ratings
+    const bookIds = response.documents.map((doc: any) => doc.bookId);
+    const userRatings = new Map(
+      response.documents.map((doc: any) => [doc.bookId, doc.rating])
+    );
+    const userStatus = new Map(
+      response.documents.map((doc: any) => [doc.bookId, doc.status])
+    );
+
+    // Use Promise.all to wait for all async operations to complete
+    const books = await Promise.all(
+      bookIds.map(async (id: string) => {
+        const result = await getBookById({ bookId: id });
+        if (result.success && result.book && !Array.isArray(result.book)) {
+          result.book.userRating = userRatings.get(id) || 0;
+          result.book.status = userStatus.get(id) || '';
+          return result.book;
+        }
+        return null;
+      })
+    );
+
+    return { success: true, books: books };
+  } catch (error) {
+    console.error(error);
+    return { success: false, books: [] };
+  }
+};
+
+export const getUserFeed = async ({ userId }: { userId: string }) => {
+  try {
+    const { databases } = await createAdminClient();
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', [userId])]
+    );
+
+    if (!response) throw new Error('Failed to fetch the user');
+
+    const user = response.documents[0];
+    const friendIds = user.friendIds || [];
+
+    const userActivity = await getUserActivity({ userId: userId });
+
+    const feed = [
+      {
+        userId: userId,
+        userName: user.name,
+        userProfilePic: user.profilePic,
+        books: userActivity.success ? userActivity.books : [],
+      },
+    ];
+
+    // Get all friends' activities
+    if (friendIds.length > 0) {
+      // Fetch all friend user documents first
+      const friendsResponse = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        [Query.equal('$id', friendIds)]
+      );
+
+      const friendUsers = friendsResponse.documents;
+
+      // Create a map for easy access to friend details
+      const friendMap: Record<string, any> = {};
+      friendUsers.forEach((friend) => {
+        friendMap[friend.$id] = friend;
       });
 
-      if (!response.ok) {
-        console.error(`Failed to fetch book ${id}: ${response.statusText}`);
-        return null;
-      }
+      // Use Promise.all to fetch all friend activities concurrently
+      const friendActivities = await Promise.all(
+        friendIds.map(async (friendId: string) => {
+          try {
+            const friendActivity = await getUserActivity({ userId: friendId });
+            const friend = friendMap[friendId];
 
-      const bookData = await response.json();
-      const userActivity = userActivities.get(id);
+            return {
+              userId: friendId,
+              userName: friend?.name || 'Friend',
+              userProfilePic: friend?.profilePic || '/images/profile-pic.jpg',
+              books: friendActivity.success ? friendActivity.books : [],
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching activity for friend ${friendId}:`,
+              error
+            );
+            return {
+              userId: friendId,
+              userName: 'Friend',
+              userProfilePic: '/images/profile-pic.jpg',
+              books: [],
+            };
+          }
+        })
+      );
 
-      return {
-        id: bookData.id,
-        title: bookData.volumeInfo?.title || 'Untitled',
-        authors: bookData.volumeInfo?.authors || [],
-        description: cleanBookDescription(bookData.volumeInfo?.description),
-        pageCount: bookData.volumeInfo?.pageCount || 0,
-        publishedDate: bookData.volumeInfo?.publishedDate || '',
-        categories: bookData.volumeInfo?.categories || [],
-        thumbnail:
-          bookData.volumeInfo?.imageLinks?.thumbnail?.replace(
-            'http:',
-            'https:'
-          ) || '',
-        averageRating: bookData.volumeInfo?.averageRating || 0,
-        ratingsCount: bookData.volumeInfo?.ratingsCount || 0,
-        status: userActivity?.status || null,
-        userRating: userActivity?.rating || 0,
-      };
-    });
+      // Add friends' activities to the feed
+      feed.push(...friendActivities);
+    }
 
-    const books = (await Promise.all(bookPromises)).filter(Boolean);
-    return books;
+    const sortedFeed = feed
+      .filter((item) => item.books.length > 0) // Remove empty activities
+      .sort((a, b) => {
+        const aTime = a.books[0]?.$updatedAt || 0;
+        const bTime = b.books[0]?.$updatedAt || 0;
+        return bTime - aTime; // Sort descending (newest first)
+      });
+    return { success: true, feed: sortedFeed };
   } catch (error) {
-    console.error('Error fetching book activity:', error);
-    return [];
+    console.error(error);
+    return { success: false, feed: [] };
   }
 };
 

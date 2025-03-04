@@ -1,13 +1,13 @@
 import React from 'react';
 import BookCard from './BookCard';
 import { cn } from '@/lib/utils';
-import { Feed, UserCardProps } from '@/types';
+import { Feed as FeedType, UserCardProps } from '@/types';
 
 const Feed = async ({
   feed,
   className,
 }: {
-  feed: Feed[];
+  feed: FeedType[];
   className?: string;
   user: UserCardProps;
 }) => {
@@ -15,7 +15,7 @@ const Feed = async ({
     <>
       {feed.length > 0 ? (
         <div className={cn('flex flex-col w-full', className)}>
-          {feed.map((feedItem: Feed) => {
+          {feed.map((feedItem: FeedType) => {
             // Create a user object for the book card
             const feedUser = {
               $id: feedItem.userId,

@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Book } from '@/types';
-import { getBooksBySearchTerm } from '@/lib/actions/books.actions';
+import { getBooksBySearchTerm } from '@/lib/actions/book.actions';
 
 const Search = () => {
   const [query, setQuery] = useState<string>('');

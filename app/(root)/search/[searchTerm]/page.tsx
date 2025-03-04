@@ -1,5 +1,5 @@
 import BookCard from '@/components/BookCard';
-import { getBooks } from '@/lib/actions/book.actions';
+import { getBooksBySearchTerm } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import React from 'react';
 
@@ -12,7 +12,8 @@ const SearchBooks = async ({
   const decodedSearchTerm = decodeURIComponent(param.searchTerm);
 
   const user = await getCurrentUser();
-  const books = (await getBooks({ searchTerm: decodedSearchTerm })).books;
+  const books = (await getBooksBySearchTerm({ searchTerm: decodedSearchTerm }))
+    .books;
 
   return (
     <div className="mb-12 mt-36 mx-12">
