@@ -27,7 +27,7 @@ const Header = ({ user }: { user: User }) => {
         />
         <Link href={`/profile/${user.$id}`}>
           <Image
-            src={user.profilePic || '/images/profile-pic.jpg'}
+            src={user.profilePic || '/images/profile-pic.png'}
             alt="profile"
             width={48}
             height={48}

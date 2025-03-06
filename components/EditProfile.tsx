@@ -58,7 +58,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
           </DialogHeader>
           <div>
             <Image
-              src={profilePic || '/images/profile-pic.jpg'}
+              src={profilePic || '/images/profile-pic.png'}
               alt="user"
               width={200}
               height={200}

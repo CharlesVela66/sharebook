@@ -11,7 +11,15 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <aside className="p-4 sm:flex flex-col bg-white min-h-full remove-scrollbar sm:w-[170px] md:w-[200px] lg:w-[220px] fixed">
-      <h1 className="my-6 mx-4">Logo</h1>
+      <div className="flex gap-2">
+        <Image src="/images/logo-black.png" alt="logo" width={70} height={40} />
+        <Image
+          src="/images/logo-text.png"
+          alt="logo-text"
+          width={80}
+          height={40}
+        />
+      </div>
       <nav>
         <ul className="flex flex-col my-12">
           {navItems.map((item) => (

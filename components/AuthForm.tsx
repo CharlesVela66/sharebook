@@ -66,18 +66,26 @@ const AuthForm = ({ type }: { type: FormType }) => {
   };
 
   return (
-    <>
+    <div className="flex">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
-          <h1 className="form-title">
-            {type === 'sign-in' ? 'Login' : 'Create Account'}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col w-full max-w-[754px] items-center justify-center"
+        >
+          <h1 className="font-bold text-[48px]">
+            {type === 'sign-in' ? 'Welcome Back!' : 'Create Account'}
           </h1>
+          <p className="font-light text-[16px] mb-5">
+            {type === 'sign-in'
+              ? 'Enter your email below to login to your account'
+              : 'Enter your information below to create an account'}
+          </p>
           {type === 'sign-up' && (
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full px-12 mb-2">
                   <div className="shad-form-item">
                     <FormLabel className="shad-form-label">Name</FormLabel>
                     <FormControl>
@@ -97,14 +105,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <div className="shad-form-item">
+              <FormItem className="w-full px-12 mb-2">
+                <div>
                   <FormLabel className="shad-form-label">Email</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter your email"
                       {...field}
-                      className="shad-input"
+                      className="w-full"
                     />
                   </FormControl>
                 </div>
@@ -118,7 +126,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 control={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full px-12 mb-2">
                     <div className="shad-form-item">
                       <FormLabel className="shad-form-label">
                         Username
@@ -139,7 +147,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 control={form.control}
                 name="dateOfBirth"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full px-12 mb-2">
                     <div className="shad-form-item">
                       <FormLabel className="shad-form-label">
                         Date Of Birth
@@ -160,7 +168,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 control={form.control}
                 name="country"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full px-12 mb-2">
                     <div className="shad-form-item">
                       <FormLabel className="shad-form-label">Country</FormLabel>
                       <FormControl>
@@ -179,7 +187,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           )}
           <Button
             type="submit"
-            className="form-submit-button"
+            className="bg-brand text-[18px] my-4 py-6 px-10"
             disabled={isLoading}
           >
             {type === 'sign-in' ? 'Login' : 'Create Account'}
@@ -210,11 +218,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </div>
         </form>
       </Form>
+      <div className="flex bg-brand h-screen w-full items-center justify-center">
+        <Image
+          src="/images/full-logo-black.png"
+          alt="logo"
+          width={600}
+          height={600}
+        />
+      </div>
 
       {accountId && (
         <OTPModal email={form.getValues('email')} accountId={accountId} />
       )}
-    </>
+    </div>
   );
 };
 

@@ -22,7 +22,7 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
     <div className="max-w-[920px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
       {type === 'feed' && (
         <Image
-          src={user.profilePic || '/images/profile-pic.jpg'}
+          src={user.profilePic || '/images/profile-pic.png'}
           alt="profile"
           width={48}
           height={48}

@@ -294,7 +294,7 @@ export const getUserFeed = async ({ userId }: { userId: string }) => {
             return {
               userId: friendId,
               userName: friend?.name || 'Friend',
-              userProfilePic: friend?.profilePic || '/images/profile-pic.jpg',
+              userProfilePic: friend?.profilePic || '/images/profile-pic.png',
               books: friendActivity.success ? friendActivity.books : [],
             };
           } catch (error) {
@@ -305,7 +305,7 @@ export const getUserFeed = async ({ userId }: { userId: string }) => {
             return {
               userId: friendId,
               userName: 'Friend',
-              userProfilePic: '/images/profile-pic.jpg',
+              userProfilePic: '/images/profile-pic.png',
               books: [],
             };
           }

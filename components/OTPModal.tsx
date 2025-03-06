@@ -55,18 +55,18 @@ const OTPModal = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent className="shad-alert-dialog">
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader className="relative flex justify-center">
-          <AlertDialogTitle className="h2 text-center">
+          <AlertDialogTitle className="font-bold text-[36px] text-center">
             Enter OTP
           </AlertDialogTitle>
           <Image
-            src="/assets/icons/close-dark.svg"
+            src="/icons/close-dark.svg"
             alt="close"
             width={20}
             height={20}
             onClick={() => setIsOpen(false)}
-            className="otp-close-button"
+            className="absolute -right-1 -top-7 cursor-pointer sm:-right-2 sm:-top-4"
           />
           <AlertDialogDescription className="subtitle-2 text-center text-light-100">
             We&apos;ve sent a code to{' '}
@@ -74,13 +74,31 @@ const OTPModal = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <InputOTP maxLength={6} value={password} onChange={setPassword}>
-          <InputOTPGroup className="shad-otp">
-            <InputOTPSlot index={0} className="shad-otp-slot" />
-            <InputOTPSlot index={1} className="shad-otp-slot" />
-            <InputOTPSlot index={2} className="shad-otp-slot" />
-            <InputOTPSlot index={3} className="shad-otp-slot" />
-            <InputOTPSlot index={4} className="shad-otp-slot" />
-            <InputOTPSlot index={5} className="shad-otp-slot" />
+          <InputOTPGroup className="w-full flex justify-center">
+            <InputOTPSlot
+              index={0}
+              className="text-[36px] w-16 h-16 font-bold text-brand "
+            />
+            <InputOTPSlot
+              index={1}
+              className="text-[36px] w-16 h-16 font-bold text-brand"
+            />
+            <InputOTPSlot
+              index={2}
+              className="text-[36px] w-16 h-16 font-bold text-brand"
+            />
+            <InputOTPSlot
+              index={3}
+              className="text-[36px] w-16 h-16 font-bold text-brand"
+            />
+            <InputOTPSlot
+              index={4}
+              className="text-[36px] w-16 h-16 font-bold text-brand"
+            />
+            <InputOTPSlot
+              index={5}
+              className="text-[36px] w-16 h-16 font-bold text-brand"
+            />
           </InputOTPGroup>
         </InputOTP>
         <AlertDialogFooter>

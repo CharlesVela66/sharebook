@@ -20,7 +20,7 @@ const Feed = async ({
             const feedUser = {
               $id: feedItem.userId,
               name: feedItem.userName || 'User',
-              profilePic: feedItem.userProfilePic || '/images/profile-pic.jpg',
+              profilePic: feedItem.userProfilePic || '/images/profile-pic.png',
             };
 
             return feedItem.books.map((book) => (

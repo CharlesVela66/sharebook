@@ -18,7 +18,7 @@ const Profile = async () => {
     {
       userId: user.$id,
       userName: user.name,
-      userProfilePic: user.profilePic || '/images/profile-pic.jpg',
+      userProfilePic: user.profilePic || '/images/profile-pic.png',
       books: (bookActivity || []).filter((book): book is Book => book !== null),
     },
   ];
@@ -28,7 +28,7 @@ const Profile = async () => {
       <div className="flex justify-between w-full mb-4">
         <div className="flex gap-6 relative w-full">
           <Image
-            src={user.profilePic || '/images/profile-pic.jpg'}
+            src={user.profilePic || '/images/profile-pic.png'}
             alt="profile picture"
             width={232}
             height={266}

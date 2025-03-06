@@ -98,7 +98,7 @@ export const users = [
   {
     id: 1,
     name: 'Carlos Velasco',
-    profilePic: '/images/profile-pic.jpg',
+    profilePic: '/images/profile-pic.png',
     email: 'carlosed.velasco@gmail.com',
     username: 'charlesvelaa',
     dateOfBirth: 'April 9th, 2003',
