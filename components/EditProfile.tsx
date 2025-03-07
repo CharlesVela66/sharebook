@@ -10,18 +10,20 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { Button } from './ui/button';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { User } from '@/types';
 import InputField from './InputField';
+import { uploadProfilePicture } from '@/lib/actions/user.actions';
 
 declare interface EditProfileProps {
   user: User;
 }
 
 const EditProfile = ({ user }: EditProfileProps) => {
-  const { name, profilePic, username, email, dateOfBirth, country } = user;
+  const { $id, name, profilePic, username, email, dateOfBirth, country } = user;
 
   const [currentUser, setCurrentUser] = useState({
+    id: $id,
     name: name,
     profilePic: profilePic,
     username: username,
@@ -29,6 +31,12 @@ const EditProfile = ({ user }: EditProfileProps) => {
     dateOfBirth: dateOfBirth,
     country: country,
   });
+
+  const [previewImage, setPreviewImage] = useState<string | null>(profilePic);
+
+  const [open, setOpen] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -38,9 +46,42 @@ const EditProfile = ({ user }: EditProfileProps) => {
     }));
   };
 
+  const handleImageUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+
+      setCurrentUser((prev) => ({
+        ...prev,
+        profilePic: file,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+
+      const updatedUser = await uploadProfilePicture(currentUser);
+      if (!updatedUser) {
+        throw new Error('Could not upload image.');
+      }
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="absolute top-2 right-14">
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Image
             src="/icons/edit.svg"
@@ -56,16 +97,37 @@ const EditProfile = ({ user }: EditProfileProps) => {
               Edit Personal Information
             </DialogTitle>
           </DialogHeader>
-          <div>
+          <div className="h-[200px]">
             <Image
-              src={profilePic || '/images/profile-pic.png'}
+              src={previewImage || '/images/profile-pic.png'}
               alt="user"
               width={200}
               height={200}
-              className="rounded-full h-[200px] object-cover"
+              className="rounded-full object-cover h-[200px]"
             />
+            <Button
+              className="bg-white relative shadow-xl rounded-full w-8 h-8 left-36 bottom-9"
+              onClick={handleImageUpload}
+            >
+              <Image
+                src="/icons/edit-circle.svg"
+                alt="edit"
+                fill
+                className="object-contain p-1.5"
+              />
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
           </div>
-          <form className="flex flex-col w-full px-8 gap-y-3 items-center justify-center">
+          <form
+            className="flex flex-col w-full px-8 gap-y-3 items-center justify-center"
+            onSubmit={handleSubmit}
+          >
             <div className="w-full">
               <InputField
                 type="text"
@@ -124,7 +186,6 @@ const EditProfile = ({ user }: EditProfileProps) => {
               <Button
                 type="submit"
                 className="bg-brand text-[16px] py-5 px-12 font-semibold"
-                onSubmit={() => {}}
               >
                 Done
               </Button>

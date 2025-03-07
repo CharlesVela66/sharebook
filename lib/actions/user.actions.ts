@@ -5,8 +5,9 @@ import { createAdminClient, createSessionClient } from '../appwrite';
 import { appwriteConfig } from '../appwrite/config';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { parseStringify } from '../utils';
+import { constructFileUrl, parseStringify } from '../utils';
 import { revalidatePath } from 'next/cache';
+import { InputFile } from 'node-appwrite/file';
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -167,4 +168,63 @@ export const setReadingGoal = async ({
 
   revalidatePath(`/profile/${userId}`);
   return { success: true, message: 'Reading goal updated successfully' };
+};
+
+declare interface userProfilePictureProps {
+  id: string;
+  name: string;
+  profilePic: string;
+  username: string;
+  email: string;
+  dateOfBirth: string;
+  country: string;
+}
+
+export const uploadProfilePicture = async (
+  currentUser: userProfilePictureProps
+) => {
+  const { id, name, profilePic, username, email, dateOfBirth, country } =
+    currentUser;
+
+  try {
+    const { storage, databases } = await createAdminClient();
+
+    const isNewFile = profilePic instanceof File;
+
+    let profilePicUrl = profilePic;
+
+    if (isNewFile) {
+      const fileObject = profilePic as File;
+      const arrayBuffer = await fileObject.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const inputFile = InputFile.fromBuffer(buffer, fileObject.name);
+      const bucketFile = await storage.createFile(
+        appwriteConfig.profilePicsBucketId,
+        ID.unique(),
+        inputFile
+      );
+
+      profilePicUrl = constructFileUrl(bucketFile.$id);
+    }
+
+    const response = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      id,
+      {
+        name: name,
+        profilePic: profilePicUrl,
+        username: username,
+        email: email,
+        dateOfBirth: dateOfBirth,
+        country: country,
+      }
+    );
+
+    revalidatePath(`/profile/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Upload error:', error);
+  }
 };
