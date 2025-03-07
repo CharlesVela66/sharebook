@@ -35,6 +35,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(profilePic);
 
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -68,6 +69,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
+      setIsLoading(true);
 
       const updatedUser = await uploadProfilePicture(currentUser);
       if (!updatedUser) {
@@ -76,6 +78,8 @@ const EditProfile = ({ user }: EditProfileProps) => {
       setOpen(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -186,6 +190,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
               <Button
                 type="submit"
                 className="bg-brand text-[16px] py-5 px-12 font-semibold"
+                disabled={isLoading}
               >
                 Done
               </Button>
