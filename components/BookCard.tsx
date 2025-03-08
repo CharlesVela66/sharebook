@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import { Book, UserCardProps } from '@/types';
 import BookStatusModal from './BookStatusModal';
-import { fixStatusTexts } from '@/lib/utils';
+import { fixStatusTexts, getTimeAgo } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -45,7 +45,9 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
                 />
               )}
             </div>
-            <p className="mx-4 font-light">{book.$updatedAt}</p>
+            <p className="mx-4 font-light">
+              {getTimeAgo(book.$updatedAt!.toString())}
+            </p>
           </div>
         )}
         <Link

@@ -4,6 +4,7 @@ import ReadingChallenge from '@/components/ReadingChallenge';
 import StatusCard from '@/components/StatusCard';
 import { getUserActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
+import { formatDate } from '@/lib/utils';
 import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
@@ -37,7 +38,7 @@ const Profile = async () => {
           <div className="flex flex-col">
             <h3 className="font-semibold text-[28px]">{user.name}</h3>
             <p className="font-normal text-[18px] mb-[104px]">
-              (joined in {user.$createdAt})
+              (joined in {formatDate(user.$createdAt)})
             </p>
             <p className="font-normal text-[18px]">
               Birthday: {user.dateOfBirth}

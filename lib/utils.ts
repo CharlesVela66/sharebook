@@ -109,3 +109,64 @@ export const cleanBookDescription = (
 export const constructFileUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_PROFILE_PICS_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
+
+/**
+ * Formats a date string to MMM YYYY format (e.g., "Mar 2025")
+ * @param {string} dateString - Date string in ISO format (e.g., "2025-03-07T23:43:42.951+00:00")
+ * @returns {string} Formatted date in MMM YYYY format
+ */
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+/**
+ * Calculates the time difference between now and a given date
+ * Returns a human-readable string (e.g., "5s", "5min", "5h", "5d", "5w", "5m", "5y")
+ * @param {string} dateString - Date string in ISO format (e.g., "2025-03-07T23:43:42.951+00:00")
+ * @returns {string} Human-readable time difference
+ */
+export const getTimeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  // Less than a minute
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds}s`;
+  }
+
+  // Less than an hour
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes}min`;
+  }
+
+  // Less than a day
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours}h`;
+  }
+
+  // Less than a week
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) {
+    return `${diffInDays}d`;
+  }
+
+  // Less than a month (approximating a month as 30 days)
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) {
+    return `${diffInWeeks}w`;
+  }
+
+  // Less than a year
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths}m`;
+  }
+
+  // Years
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears}y`;
+};
