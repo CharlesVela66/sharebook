@@ -1,7 +1,7 @@
-import EditProfile from '@/components/EditProfile';
-import Feed from '@/components/Feed';
-import ReadingChallenge from '@/components/ReadingChallenge';
-import StatusCard from '@/components/StatusCard';
+import EditProfile from '@/components/user/EditProfile';
+import Feed from '@/components/user/Feed';
+import ReadingChallenge from '@/components/book/ReadingChallenge';
+import StatusCard from '@/components/book/StatusCard';
 import { getUserActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import { formatDate } from '@/lib/utils';

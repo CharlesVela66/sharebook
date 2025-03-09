@@ -1,4 +1,4 @@
-import BookStatusModal from '@/components/BookStatusModal';
+import BookStatusModal from '@/components/book/BookStatusModal';
 import Rating from '@/components/Rating';
 import {
   Accordion,

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Progress } from './ui/progress';
-import { Button } from './ui/button';
+import { Progress } from '../ui/progress';
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,

@@ -1,5 +1,5 @@
 import React from 'react';
-import BookCard from './BookCard';
+import BookCard from '../book/BookCard';
 import { cn } from '@/lib/utils';
 import { Feed as FeedType, UserCardProps } from '@/types';
 

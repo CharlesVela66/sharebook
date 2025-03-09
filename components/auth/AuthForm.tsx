@@ -19,7 +19,7 @@ import { FormType } from '@/types';
 import { createAccount, signInUser } from '@/lib/actions/user.actions';
 import Image from 'next/image';
 import Link from 'next/link';
-import OTPModal from './OTPModal';
+import OTPModal from '../OTPModal';
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setIsLoading] = useState(false);

@@ -4,9 +4,9 @@ import { Book, UserCardProps } from '@/types';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts, getTimeAgo } from '@/lib/utils';
 import Link from 'next/link';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
-import Rating from './Rating';
+import { Button } from '../ui/button';
+import { Separator } from '../ui/separator';
+import Rating from '../Rating';
 
 interface BookCardProps {
   book: Book;

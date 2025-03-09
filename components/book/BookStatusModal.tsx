@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { setUserBookActivity } from '@/lib/actions/book.actions';
 
 const BookStatusModal = ({

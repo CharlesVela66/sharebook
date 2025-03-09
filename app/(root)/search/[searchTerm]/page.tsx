@@ -1,4 +1,4 @@
-import BookCard from '@/components/BookCard';
+import BookCard from '@/components/book/BookCard';
 import { getBooksBySearchTerm } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 import React from 'react';

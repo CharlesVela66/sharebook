@@ -8,11 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Button } from './ui/button';
+} from '../ui/dialog';
+import { Button } from '../ui/button';
 import { ChangeEvent, useRef, useState } from 'react';
 import { User } from '@/types';
-import InputField from './InputField';
+import InputField from '../InputField';
 import { uploadProfilePicture } from '@/lib/actions/user.actions';
 
 declare interface EditProfileProps {

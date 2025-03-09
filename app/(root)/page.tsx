@@ -1,7 +1,7 @@
 import React from 'react';
-import ReadingChallenge from '@/components/ReadingChallenge';
-import BookStatusCard from '@/components/BookStatusCard';
-import Feed from '@/components/Feed';
+import ReadingChallenge from '@/components/book/ReadingChallenge';
+import BookStatusCard from '@/components/book/BookStatusCard';
+import Feed from '@/components/user/Feed';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 
 import { getUserActivity, getUserFeed } from '@/lib/actions/book.actions';
