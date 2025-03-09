@@ -115,9 +115,38 @@ export const constructFileUrl = (bucketFileId: string) => {
  * @param {string} dateString - Date string in ISO format (e.g., "2025-03-07T23:43:42.951+00:00")
  * @returns {string} Formatted date in MMM YYYY format
  */
-export const formatDate = (dateString: string) => {
+export enum formatDateOptions {
+  'MMM-YYYY',
+  'MMMM-DD-YYYY',
+}
+export const formatDate = ({
+  dateString,
+  option = formatDateOptions['MMM-YYYY'],
+}: {
+  dateString: string;
+  option: formatDateOptions;
+}) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+  const utcDate = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate()
+  );
+
+  switch (option) {
+    case formatDateOptions['MMM-YYYY']:
+      return utcDate.toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
+    case formatDateOptions['MMMM-DD-YYYY']:
+      return utcDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric',
+      });
+  }
 };
 
 /**

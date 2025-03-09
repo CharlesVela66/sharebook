@@ -167,7 +167,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
             <div className="flex gap-4">
               <div className="w-1/2">
                 <InputField
-                  type="text"
+                  type="date"
                   id="dateOfBirth"
                   placeholder="Date of Birth"
                   label="Date of Birth"

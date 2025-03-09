@@ -46,16 +46,23 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setErrorMessage('');
 
     try {
+      const formattedValues = { ...values };
+
+      if (type === 'sign-up' && values.dateOfBirth) {
+        const dateObj = new Date(values.dateOfBirth);
+        formattedValues.dateOfBirth = dateObj.toISOString();
+      }
+
       const user =
         type === 'sign-up'
           ? await createAccount({
-              name: values.name || '',
-              email: values.email,
-              username: values.username || '',
-              country: values.country || '',
-              dateOfBirth: values.dateOfBirth || '',
+              name: formattedValues.name || '',
+              email: formattedValues.email,
+              username: formattedValues.username || '',
+              country: formattedValues.country || '',
+              dateOfBirth: formattedValues.dateOfBirth || '',
             })
-          : await signInUser({ email: values.email });
+          : await signInUser({ email: formattedValues.email });
 
       setAccountId(user.accountId);
     } catch {
@@ -154,7 +161,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter your date of birth"
+                          type="date"
+                          placeholder="YYYY-MM-DD"
                           {...field}
                           className="shad-input"
                         />
@@ -193,7 +201,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             {type === 'sign-in' ? 'Login' : 'Create Account'}
             {isLoading && (
               <Image
-                src="/assets/icons/loader.svg"
+                src="icons/loader.svg"
                 alt="loader"
                 width={24}
                 height={24}

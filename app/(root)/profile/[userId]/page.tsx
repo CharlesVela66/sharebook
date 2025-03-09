@@ -4,7 +4,7 @@ import ReadingChallenge from '@/components/book/ReadingChallenge';
 import StatusCard from '@/components/book/StatusCard';
 import { getUserActivity } from '@/lib/actions/book.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatDateOptions } from '@/lib/utils';
 import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
@@ -13,7 +13,17 @@ const Profile = async () => {
   const user = await getCurrentUser();
   const response = await getUserActivity({ userId: user.$id });
   const bookActivity = response.books;
-  const count = bookActivity?.filter((act) => act?.status === 'Read').length;
+  const count = bookActivity?.filter((act) => act?.userRating).length;
+  const ratingAvg =
+    bookActivity.length > 0
+      ? (
+          bookActivity?.reduce(
+            (accum, act) =>
+              act?.userRating ? act?.userRating + accum : accum + 0,
+            0
+          ) / count
+        ).toFixed(2)
+      : 0;
 
   const formattedFeed = [
     {
@@ -38,13 +48,22 @@ const Profile = async () => {
           <div className="flex flex-col">
             <h3 className="font-semibold text-[28px]">{user.name}</h3>
             <p className="font-normal text-[18px] mb-[104px]">
-              (joined in {formatDate(user.$createdAt)})
+              (joined in{' '}
+              {formatDate({
+                dateString: user.$createdAt,
+                option: formatDateOptions['MMM-YYYY'],
+              })}
+              )
             </p>
             <p className="font-normal text-[18px]">
-              Birthday: {user.dateOfBirth}
+              Birthday:{' '}
+              {formatDate({
+                dateString: user.dateOfBirth,
+                option: formatDateOptions['MMMM-DD-YYYY'],
+              })}
             </p>
             <p className="font-normal text-[18px]">
-              {count} ratings (4.00 average)
+              {count} {count === 1 ? 'rating' : 'ratings'} ({ratingAvg} avg)
             </p>
           </div>
           <EditProfile user={user} />

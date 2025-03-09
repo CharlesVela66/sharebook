@@ -55,7 +55,6 @@ const Rating = ({
         userId,
         bookId,
         rating: selectedRating,
-        type: 'update',
       });
 
       console.log('Rating update response:', response);

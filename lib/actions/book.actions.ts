@@ -67,6 +67,16 @@ export const getBooksBySearchTerm = async ({
         const existingBook = bookMap.get(title);
         const currentBook = transformBookResponse(book);
 
+        const { ratings, numRatings } = await getBookRating({
+          bookId: currentBook.id,
+          avgRating: currentBook.averageRating,
+          ratingsCount: currentBook.ratingsCount,
+        });
+        if (ratings && numRatings) {
+          currentBook.averageRating = ratings;
+          currentBook.ratingsCount = numRatings;
+        }
+
         if (userId) {
           const bookActivity = await getUserBookActivity({
             userId: userId,
@@ -145,9 +155,10 @@ export const getBookById = async ({
         userId: userId,
         bookId: bookId,
       });
-      console.log(bookActivity);
-      book.userRating = bookActivity!.rating;
-      book.status = bookActivity!.status;
+      if (bookActivity) {
+        book.userRating = bookActivity!.rating;
+        book.status = bookActivity!.status;
+      }
     }
 
     return { success: true, book: book };
@@ -179,12 +190,14 @@ const getBookRating = async ({
 
     // Get the ratings user have given the book
     const userRatings = bookActivity.documents.reduce(
-      (accum, doc) => accum + doc.rating,
+      (accum, doc) => doc.rating > 0 && accum + doc.rating,
       0
     );
 
     // Count how many users have rated the book
-    const userRatingsCount = bookActivity.documents.length;
+    const userRatingsCount = bookActivity.documents.filter(
+      (doc) => doc.rating > 0
+    ).length;
 
     // Add the count of users' ratings with the count of original ratings
     const numRatings = userRatingsCount + ratingsCount;
@@ -385,18 +398,29 @@ export const setUserBookActivity = async ({
   bookId,
   status,
   rating,
-  type,
 }: {
   userId: string;
   bookId: string;
   status?: string | null;
   rating?: number | null;
-  type: 'create' | 'update';
 }) => {
   try {
     const { databases } = await createAdminClient();
 
-    if (type === 'create') {
+    // Check if document already exists
+    const documentList = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.bookActivityCollectionId,
+      [Query.equal('userId', userId), Query.equal('bookId', bookId)]
+    );
+
+    // If rating is provided but status isn't, set status to 'Read'
+    if (rating && !status) {
+      status = 'Read';
+    }
+
+    if (documentList.documents.length === 0) {
+      // Create new document if none exists
       await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.bookActivityCollectionId,
@@ -409,13 +433,8 @@ export const setUserBookActivity = async ({
         }
       );
     } else {
-      const document = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.bookActivityCollectionId,
-        [Query.equal('userId', userId), Query.equal('bookId', bookId)]
-      );
-      const documentId = document.documents[0].$id;
-
+      // Update existing document
+      const documentId = documentList.documents[0].$id;
       await databases.updateDocument(
         appwriteConfig.databaseId,
         appwriteConfig.bookActivityCollectionId,
@@ -426,9 +445,11 @@ export const setUserBookActivity = async ({
         }
       );
     }
+
     revalidatePath('/');
-    return { success: true, message: 'Book activity created successfully' };
+    return { success: true, message: 'Book activity updated successfully' };
   } catch (error) {
     console.error(error);
+    return { success: false, message: 'Failed to update book activity' };
   }
 };

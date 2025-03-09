@@ -39,7 +39,6 @@ const BookStatusModal = ({
         userId: userId,
         bookId: bookId,
         status: currentStatus,
-        type: status ? 'update' : 'create',
       });
 
       if (result && result.success) {

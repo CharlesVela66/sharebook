@@ -113,7 +113,7 @@ const OTPModal = ({
                 Submit
                 {isLoading && (
                   <Image
-                    src="assets/icons/loader.svg"
+                    src="/icons/loader.svg"
                     alt="loader"
                     width={24}
                     height={24}

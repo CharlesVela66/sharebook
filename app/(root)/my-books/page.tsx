@@ -20,7 +20,7 @@ const MyBooks = async () => {
             ))}
         </>
       ) : (
-        <p>El usuario no ha tenido actividad</p>
+        <p>You don&apos;t have any activity!</p>
       )}
     </section>
   );

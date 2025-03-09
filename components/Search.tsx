@@ -6,7 +6,6 @@ import { Input } from './ui/input';
 import { useDebounce } from 'use-debounce';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Book } from '@/types';
 import { getBooksBySearchTerm } from '@/lib/actions/book.actions';
 
@@ -78,6 +77,11 @@ const Search = () => {
     }
   };
 
+  const handleClick = (id: string) => {
+    setOpen(false);
+    router.push(`/book/${id}`);
+  };
+
   return (
     <div ref={searchRef} className="relative w-full md:max-w-[730px] mt-3 pl-8">
       <div className="relative h-[52px] ">
@@ -113,8 +117,8 @@ const Search = () => {
             {results.length > 0 ? (
               results.map((book) => (
                 <li key={book.id} className="flex items-center justify-between">
-                  <Link
-                    href={`/book/${book.id}`}
+                  <div
+                    onClick={() => handleClick(book.id)}
                     className="flex cursor-pointer items-center gap-4"
                   >
                     <Image
@@ -135,7 +139,7 @@ const Search = () => {
                         </span>
                       </p>
                     </div>
-                  </Link>
+                  </div>
                   {book.averageRating > 0 && (
                     <div className="flex gap-2 mx-2 items-center">
                       <Image

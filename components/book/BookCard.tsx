@@ -78,7 +78,8 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
         <div className="flex justify-between items-end">
           {type === 'search' && (
             <p className="w-full mt-2 text-[16px] italic font-light">
-              {book.averageRating} avg rating - {book.ratingsCount} ratings
+              {book.averageRating.toFixed(1)} avg rating - {book.ratingsCount}{' '}
+              {book.ratingsCount === 1 ? 'rating' : 'ratings'}
             </p>
           )}
           <div
