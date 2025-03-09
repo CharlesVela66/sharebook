@@ -21,15 +21,11 @@ const Rating = ({
   bookAvgRating?: number;
   className?: string;
 }) => {
-  // Use userRating if edit mode, otherwise use bookAvgRating
-  const initialRating = edit ? userRating || 0 : bookAvgRating;
-
-  const [rating, setRating] = useState<number>(initialRating);
+  const [rating, setRating] = useState<number>(0);
   const [hover, setHover] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
 
-  // Update local state if props change
   useEffect(() => {
     if (edit && userRating !== undefined) {
       setRating(userRating);

@@ -130,13 +130,23 @@ export const getBookById = async ({
     const data = await response.json();
 
     const book = transformBookResponse(data);
+    const { ratings, numRatings } = await getBookRating({
+      bookId: bookId,
+      avgRating: book.averageRating,
+      ratingsCount: book.ratingsCount,
+    });
+    if (ratings && numRatings) {
+      book.averageRating = ratings;
+      book.ratingsCount = numRatings;
+    }
 
     if (userId) {
       const bookActivity = await getUserBookActivity({
         userId: userId,
         bookId: bookId,
       });
-      book.userRating = bookActivity!.userRating;
+      console.log(bookActivity);
+      book.userRating = bookActivity!.rating;
       book.status = bookActivity!.status;
     }
 
@@ -144,6 +154,48 @@ export const getBookById = async ({
   } catch (error) {
     console.error(error);
     return { success: false, book: [] };
+  }
+};
+
+const getBookRating = async ({
+  bookId,
+  avgRating,
+  ratingsCount,
+}: {
+  bookId: string;
+  avgRating: number;
+  ratingsCount: number;
+}) => {
+  try {
+    // Get the databases constant to make requests to the database
+    const { databases } = await createAdminClient();
+
+    // Search for the documents that match the BookId
+    const bookActivity = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.bookActivityCollectionId,
+      [Query.equal('bookId', [bookId])]
+    );
+
+    // Get the ratings user have given the book
+    const userRatings = bookActivity.documents.reduce(
+      (accum, doc) => accum + doc.rating,
+      0
+    );
+
+    // Count how many users have rated the book
+    const userRatingsCount = bookActivity.documents.length;
+
+    // Add the count of users' ratings with the count of original ratings
+    const numRatings = userRatingsCount + ratingsCount;
+
+    // Add the users' ratings with the original ratings and then obtain the average
+    const ratings = (userRatings + avgRating * ratingsCount) / numRatings;
+
+    return { ratings: ratings, numRatings: numRatings };
+  } catch (error) {
+    console.error(error);
+    return { ratings: 0, numRatings: 0 };
   }
 };
 
@@ -221,7 +273,6 @@ export const getUserActivity = async ({
       response.documents.map((doc: any) => [doc.bookId, doc.$updatedAt])
     );
 
-    // Use Promise.all to wait for all async operations to complete
     const books = await Promise.all(
       bookIds.map(async (id: string) => {
         const result = await getBookById({ bookId: id });
@@ -284,7 +335,6 @@ export const getUserFeed = async ({ userId }: { userId: string }) => {
         friendMap[friend.$id] = friend;
       });
 
-      // Use Promise.all to fetch all friend activities concurrently
       const friendActivities = await Promise.all(
         friendIds.map(async (friendId: string) => {
           try {

@@ -102,23 +102,26 @@ const OTPModal = ({
           </InputOTPGroup>
         </InputOTP>
         <AlertDialogFooter>
-          <div className="flex w-full flex-col gap-4">
-            <AlertDialogAction
-              onClick={handleSubmit}
-              className="shad-submit-btn h-12 bg-brand"
-              type="button"
-            >
-              Submit
-              {isLoading && (
-                <Image
-                  src="assets/icons/loader.svg"
-                  alt="loader"
-                  width={24}
-                  height={24}
-                  className="ml-2 animate-spin"
-                />
-              )}
-            </AlertDialogAction>
+          <div className="flex w-full flex-col gap-3">
+            <div className="flex justify-center">
+              <AlertDialogAction
+                onClick={handleSubmit}
+                className="w-fit p-6 bg-brand"
+                type="button"
+                disabled={isLoading}
+              >
+                Submit
+                {isLoading && (
+                  <Image
+                    src="assets/icons/loader.svg"
+                    alt="loader"
+                    width={24}
+                    height={24}
+                    className="ml-2 animate-spin"
+                  />
+                )}
+              </AlertDialogAction>
+            </div>
             <div className="subtitle-2 mt-2 text-center text-light-100">
               Didn&apos;t get a code?
               <Button
