@@ -25,6 +25,7 @@ const InputField = ({
       <Input
         type={type}
         id={id}
+        name={id}
         placeholder={placeholder}
         value={value}
         onChange={onChange}

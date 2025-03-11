@@ -5,7 +5,7 @@ import { createAdminClient, createSessionClient } from '../appwrite';
 import { appwriteConfig } from '../appwrite/config';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { constructFileUrl, parseStringify } from '../utils';
+import { constructFileUrl, parseStringify, transformToUser } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { InputFile } from 'node-appwrite/file';
 
@@ -226,5 +226,106 @@ export const uploadProfilePicture = async (
     return response;
   } catch (error) {
     console.error('Upload error:', error);
+  }
+};
+
+export const getUsers = async ({
+  searchTerm,
+  userId,
+}: {
+  searchTerm: string;
+  userId: string;
+}) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const documents = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.notEqual('$id', userId), Query.limit(100)]
+    );
+
+    if (documents.total === 0) {
+      console.log('No users found');
+      return { success: true, friends: [] };
+    }
+
+    // Perform case-insensitive filtering in JavaScript
+    const lowercaseSearchTerm = searchTerm.toLowerCase();
+    const filteredUsers = documents.documents.filter((doc) => {
+      const name = (doc.name || '').toLowerCase();
+      const username = (doc.username || '').toLowerCase();
+
+      return (
+        name.includes(lowercaseSearchTerm) ||
+        username.includes(lowercaseSearchTerm)
+      );
+    });
+
+    const friends = filteredUsers.map((doc) => {
+      return transformToUser(doc);
+    });
+
+    return { success: true, friends };
+  } catch (error) {
+    console.error('Error searching for users:', error);
+    return { success: false, friends: [] };
+  }
+};
+
+export const getUserFriends = async ({
+  userId,
+  searchTerm,
+}: {
+  userId: string;
+  searchTerm?: string;
+}) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', userId)]
+    );
+
+    if (user.documents.length <= 0) {
+      throw new Error('User not found');
+    }
+
+    const friendIds = user.documents[0].friendIds || [];
+
+    if (friendIds.length <= 0) {
+      console.log('The user has no friends');
+      return { success: true, friends: [] };
+    }
+
+    const friends = friendIds.map(async (id: string) => {
+      const queries = [Query.equal('$id', id)];
+
+      if (searchTerm) {
+        queries.push(
+          Query.equal('$id', id),
+          Query.or([
+            Query.contains('name', searchTerm),
+            Query.contains('username', searchTerm),
+          ])
+        );
+      }
+
+      const friend = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        queries
+      );
+      return friend.documents.length > 0
+        ? transformToUser(friend.documents[0])
+        : null;
+    });
+
+    return { success: true, friends: friends };
+  } catch (error) {
+    console.error(error);
+    return { success: false, friends: [] };
   }
 };

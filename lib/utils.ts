@@ -1,4 +1,4 @@
-import { Book, BookResponse, FormType } from '@/types';
+import { Book, BookResponse, FormType, User } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { z } from 'zod';
@@ -198,4 +198,23 @@ export const getTimeAgo = (dateString: string) => {
   // Years
   const diffInYears = Math.floor(diffInDays / 365);
   return `${diffInYears}y`;
+};
+
+export const transformToUser = (userDoc: any): User | null => {
+  if (!userDoc) return null;
+
+  return {
+    $id: userDoc.$id || '',
+    name: userDoc.name || '',
+    email: userDoc.email || '',
+    profilePic: userDoc.profilePic || '',
+    username: userDoc.username || '',
+    dateOfBirth: userDoc.dateOfBirth || '',
+    country: userDoc.country || '',
+    createdAt: userDoc.createdAt || '',
+    readingGoal: userDoc.readingGoal || null,
+    friends: Array.isArray(userDoc.friends)
+      ? userDoc.friends.map(transformToUser)
+      : null,
+  };
 };
