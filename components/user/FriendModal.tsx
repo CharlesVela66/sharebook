@@ -14,7 +14,10 @@ import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { Input } from '../ui/input';
 import { useDebounce } from 'use-debounce';
-import { getCurrentUser, getUsers } from '@/lib/actions/user.actions';
+import {
+  getCurrentUser,
+  getUsersBySearchTerm,
+} from '@/lib/actions/user.actions';
 
 const FriendModal = () => {
   const [query, setQuery] = useState<string>('');
@@ -35,7 +38,7 @@ const FriendModal = () => {
         setLoading(true);
         setError('');
         const user = await getCurrentUser();
-        const response = await getUsers({
+        const response = await getUsersBySearchTerm({
           searchTerm: debouncedQuery,
           userId: user.$id,
         });

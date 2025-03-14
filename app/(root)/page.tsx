@@ -38,7 +38,7 @@ const Home = async () => {
   );
 
   return (
-    <section className="flex mb-12 mt-36 ml-24">
+    <section className="flex flex-col md:flex-row mb-12 mt-36 ml-16">
       <Feed feed={bookActivity} user={user} />
       <div className="flex flex-col h-full sticky max-w-[340px] w-full mx-6">
         <ReadingChallenge

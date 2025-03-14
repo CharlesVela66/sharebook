@@ -58,3 +58,13 @@ declare type Feed = {
 };
 
 export type FormType = 'sign-in' | 'sign-up';
+
+declare interface userProfilePictureProps {
+  id: string;
+  name: string;
+  profilePic: string;
+  username: string;
+  email: string;
+  dateOfBirth: string;
+  country: string;
+}

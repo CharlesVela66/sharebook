@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import { constructFileUrl, parseStringify, transformToUser } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { InputFile } from 'node-appwrite/file';
+import { userProfilePictureProps } from '@/types';
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -170,16 +171,6 @@ export const setReadingGoal = async ({
   return { success: true, message: 'Reading goal updated successfully' };
 };
 
-declare interface userProfilePictureProps {
-  id: string;
-  name: string;
-  profilePic: string;
-  username: string;
-  email: string;
-  dateOfBirth: string;
-  country: string;
-}
-
 export const uploadProfilePicture = async (
   currentUser: userProfilePictureProps
 ) => {
@@ -229,7 +220,7 @@ export const uploadProfilePicture = async (
   }
 };
 
-export const getUsers = async ({
+export const getUsersBySearchTerm = async ({
   searchTerm,
   userId,
 }: {

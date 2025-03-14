@@ -10,7 +10,7 @@ import React from 'react';
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="p-4 sm:flex flex-col bg-white min-h-full remove-scrollbar sm:w-[170px] md:w-[200px] lg:w-[220px] fixed">
+    <aside className="p-4 sm:flex flex-col bg-white min-h-full remove-scrollbar sm:max-w-[100px] md:max-w-[200px] lg:max-w-[220px] fixed">
       <div className="flex items-center">
         <Image src="/images/logo-black.png" alt="logo" width={70} height={40} />
         <div className="flex justify-center">
