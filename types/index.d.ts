@@ -24,7 +24,6 @@ declare interface User {
   country: string;
   createdAt: string;
   readingGoal?: number | null;
-  friends?: User[] | null;
 }
 
 declare interface UserCardProps {

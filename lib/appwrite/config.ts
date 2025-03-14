@@ -5,6 +5,8 @@ export const appwriteConfig = {
   userCollectionId: process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION!,
   bookActivityCollectionId:
     process.env.NEXT_PUBLIC_APPWRITE_BOOK_ACTIVITY_COLLECTION!,
+  friendRequestCollectionId:
+    process.env.NEXT_PUBLIC_USER_FRIEND_REQUEST_COLLECTION!,
   profilePicsBucketId: process.env.NEXT_PUBLIC_APPWRITE_PROFILE_PICS_BUCKET!,
   secretKey: process.env.NEXT_APPWRITE_SECRET!,
 };

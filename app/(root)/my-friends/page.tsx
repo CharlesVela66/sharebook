@@ -1,5 +1,6 @@
 import FriendModal from '@/components/user/FriendModal';
-import { getCurrentUser, getUserFriends } from '@/lib/actions/user.actions';
+import { getUserFriends } from '@/lib/actions/friend.request.actions';
+import { getCurrentUser } from '@/lib/actions/user.actions';
 import { User } from '@/types';
 import React from 'react';
 

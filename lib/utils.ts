@@ -213,8 +213,5 @@ export const transformToUser = (userDoc: any): User | null => {
     country: userDoc.country || '',
     createdAt: userDoc.createdAt || '',
     readingGoal: userDoc.readingGoal || null,
-    friends: Array.isArray(userDoc.friends)
-      ? userDoc.friends.map(transformToUser)
-      : null,
   };
 };

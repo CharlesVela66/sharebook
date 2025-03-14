@@ -241,7 +241,6 @@ export const getUsersBySearchTerm = async ({
       return { success: true, friends: [] };
     }
 
-    // Perform case-insensitive filtering in JavaScript
     const lowercaseSearchTerm = searchTerm.toLowerCase();
     const filteredUsers = documents.documents.filter((doc) => {
       const name = (doc.name || '').toLowerCase();
@@ -260,63 +259,6 @@ export const getUsersBySearchTerm = async ({
     return { success: true, friends };
   } catch (error) {
     console.error('Error searching for users:', error);
-    return { success: false, friends: [] };
-  }
-};
-
-export const getUserFriends = async ({
-  userId,
-  searchTerm,
-}: {
-  userId: string;
-  searchTerm?: string;
-}) => {
-  try {
-    const { databases } = await createAdminClient();
-
-    const user = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      [Query.equal('$id', userId)]
-    );
-
-    if (user.documents.length <= 0) {
-      throw new Error('User not found');
-    }
-
-    const friendIds = user.documents[0].friendIds || [];
-
-    if (friendIds.length <= 0) {
-      console.log('The user has no friends');
-      return { success: true, friends: [] };
-    }
-
-    const friends = friendIds.map(async (id: string) => {
-      const queries = [Query.equal('$id', id)];
-
-      if (searchTerm) {
-        queries.push(
-          Query.equal('$id', id),
-          Query.or([
-            Query.contains('name', searchTerm),
-            Query.contains('username', searchTerm),
-          ])
-        );
-      }
-
-      const friend = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
-        queries
-      );
-      return friend.documents.length > 0
-        ? transformToUser(friend.documents[0])
-        : null;
-    });
-
-    return { success: true, friends: friends };
-  } catch (error) {
-    console.error(error);
     return { success: false, friends: [] };
   }
 };
