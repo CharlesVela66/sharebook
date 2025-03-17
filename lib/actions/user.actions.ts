@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import { constructFileUrl, parseStringify, transformToUser } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { InputFile } from 'node-appwrite/file';
-import { userProfilePictureProps } from '@/types';
+import { User, userProfilePictureProps } from '@/types';
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -260,5 +260,62 @@ export const getUsersBySearchTerm = async ({
   } catch (error) {
     console.error('Error searching for users:', error);
     return { success: false, friends: [] };
+  }
+};
+
+export const getUserById = async ({
+  userId,
+  searchTerm,
+}: {
+  userId: string;
+  searchTerm?: string;
+}): Promise<User | null> => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const userQueries = [Query.equal('$id', userId)];
+
+    if (searchTerm) {
+      userQueries.push(
+        Query.or([
+          Query.equal('name', searchTerm),
+          Query.equal('username', searchTerm),
+        ])
+      );
+    }
+
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userQueries
+    );
+
+    if (!user.documents.length) return null;
+
+    return transformToUser(user.documents[0]);
+  } catch (error) {
+    console.error('Error fetching user by ID:', error);
+    return null;
+  }
+};
+
+export const getUsersById = async ({
+  userIds,
+  searchTerm,
+}: {
+  userIds: string[];
+  searchTerm?: string;
+}): Promise<User[]> => {
+  try {
+    const userPromises = userIds.map((id) =>
+      getUserById({ userId: id, searchTerm })
+    );
+
+    const users = await Promise.all(userPromises);
+
+    return users.filter((user): user is User => user !== null);
+  } catch (error) {
+    console.error('Error fetching users by IDs:', error);
+    return [];
   }
 };
