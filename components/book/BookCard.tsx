@@ -60,7 +60,6 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
               alt={book.title || 'book'}
               fill
               className="rounded-lg object-cover"
-              sizes="90px"
             />
           </div>
           <div className="flex flex-col mr-4">

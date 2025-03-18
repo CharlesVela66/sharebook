@@ -41,7 +41,6 @@ const BookPage = async ({ params }: { params: { bookId: string } }) => {
             alt={book.title}
             fill
             className="rounded-xl object-cover"
-            sizes="310px"
           />
         </div>
         <BookStatusModal
