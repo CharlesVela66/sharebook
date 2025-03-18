@@ -317,7 +317,24 @@ export const getUserFeed = async ({ userId }: { userId: string }) => {
     if (!response) throw new Error('Failed to fetch the user');
 
     const user = response.documents[0];
-    const friendIds = user.friendIds || [];
+    const friendIds = (
+      await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.friendRequestCollectionId,
+        [
+          Query.or([
+            Query.equal('receiverId', userId),
+            Query.equal('senderId', userId),
+          ]),
+        ]
+      )
+    ).documents.map((request) => {
+      if (request.senderId === userId) {
+        return request.receiverId;
+      } else {
+        return request.senderId;
+      }
+    });
 
     const userActivity = await getUserActivity({ userId: userId });
 
