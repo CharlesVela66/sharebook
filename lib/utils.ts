@@ -211,7 +211,7 @@ export const transformToUser = (userDoc: any): User | null => {
     username: userDoc.username || '',
     dateOfBirth: userDoc.dateOfBirth || '',
     country: userDoc.country || '',
-    createdAt: userDoc.createdAt || '',
+    createdAt: userDoc.$createdAt || '',
     readingGoal: userDoc.readingGoal || null,
   };
 };

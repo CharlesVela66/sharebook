@@ -3,14 +3,18 @@ import Feed from '@/components/user/Feed';
 import ReadingChallenge from '@/components/book/ReadingChallenge';
 import StatusCard from '@/components/book/StatusCard';
 import { getUserActivity } from '@/lib/actions/book.actions';
-import { getCurrentUser } from '@/lib/actions/user.actions';
 import { formatDate, formatDateOptions } from '@/lib/utils';
 import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
+import { getUserById } from '@/lib/actions/user.actions';
 
-const Profile = async () => {
-  const user = await getCurrentUser();
+const Profile = async ({ params }: { params: { userId: string } }) => {
+  const param = await params;
+  const user = await getUserById({ userId: param.userId });
+  if (!user) {
+    throw new Error('User not found');
+  }
   const response = await getUserActivity({ userId: user.$id });
   const bookActivity = response.books;
   const count = bookActivity?.filter((act) => act?.userRating).length;
@@ -50,7 +54,7 @@ const Profile = async () => {
             <p className="font-normal text-[18px] mb-[104px]">
               (joined in{' '}
               {formatDate({
-                dateString: user.$createdAt,
+                dateString: user.createdAt,
                 option: formatDateOptions['MMM-YYYY'],
               })}
               )

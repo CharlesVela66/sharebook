@@ -203,7 +203,7 @@ const FriendModal = () => {
     // Friend request already accepted
     if (status.status === 'accepted') {
       return (
-        <Button className="bg-green-100 text-white rounded-lg" disabled>
+        <Button className="bg-green-100 text-white rounded-lg cursor-default">
           Friends
         </Button>
       );

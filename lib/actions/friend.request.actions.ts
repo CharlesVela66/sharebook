@@ -46,25 +46,21 @@ export const getUserFriends = async ({
   }
 };
 
-export const getUserFriendRequest = async ({
-  userId,
-  type,
-}: {
-  userId: string;
-  type: 'sender' | 'receiver';
-}) => {
+export const getUserFriendRequest = async ({ userId }: { userId: string }) => {
   try {
     const { databases } = await createAdminClient();
 
     const response = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.friendRequestCollectionId,
-      [Query.equal(`${type}Id`, userId)]
+      [Query.equal('receiverId', userId), Query.equal('status', 'pending')]
     );
 
     if (!response) {
       return { success: true, friends: [] };
     }
+
+    const requestIds = response.documents.map((doc) => doc.$id);
 
     const friendIds = response.documents.map((doc) =>
       doc.senderId === userId ? doc.receiverId : doc.senderId
@@ -72,7 +68,12 @@ export const getUserFriendRequest = async ({
 
     const friends = await getUsersById({ userIds: friendIds });
 
-    return { success: true, friends };
+    const friendsWithRequestIds = friends.map((friend, index) => ({
+      ...friend,
+      requestId: requestIds[index],
+    }));
+
+    return { success: true, friends: friendsWithRequestIds };
   } catch (error) {
     console.error(error);
     return { success: false, friends: [] };

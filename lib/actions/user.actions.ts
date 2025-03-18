@@ -237,7 +237,6 @@ export const getUsersBySearchTerm = async ({
     );
 
     if (documents.total === 0) {
-      console.log('No users found');
       return { success: true, friends: [] };
     }
 
