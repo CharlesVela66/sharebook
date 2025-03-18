@@ -26,7 +26,13 @@ const MyBooksByStatus = async ({
           {books
             .filter((book): book is Book => book !== null)
             .map((book) => (
-              <BookCard key={book.id} book={book} user={user} type="search" />
+              <BookCard
+                key={book.id}
+                book={book}
+                user={user}
+                currentUser={user}
+                type="search"
+              />
             ))}
         </>
       ) : (

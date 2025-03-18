@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import { Book, UserCardProps } from '@/types';
+import { Book, User, UserCardProps } from '@/types';
 import BookStatusModal from './BookStatusModal';
 import { fixStatusTexts, getTimeAgo } from '@/lib/utils';
 import Link from 'next/link';
@@ -11,10 +11,11 @@ import Rating from '../Rating';
 interface BookCardProps {
   book: Book;
   user: UserCardProps;
+  currentUser?: User;
   type: 'feed' | 'search';
 }
 
-const BookCard = async ({ book, user, type }: BookCardProps) => {
+const BookCard = async ({ book, user, currentUser, type }: BookCardProps) => {
   const status = book?.status;
 
   const text = fixStatusTexts(status!);
@@ -84,7 +85,7 @@ const BookCard = async ({ book, user, type }: BookCardProps) => {
           <div
             className={`flex justify-end w-full mr-6 ${
               type === 'search' ? '-translate-y-2' : '-translate-y-8'
-            }`}
+            } ${user.$id !== currentUser?.$id ? 'hidden' : ''}`}
           >
             <BookStatusModal
               status={status!}

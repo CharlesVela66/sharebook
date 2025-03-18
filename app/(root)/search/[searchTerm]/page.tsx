@@ -24,7 +24,13 @@ const SearchBooks = async ({
       {books ? (
         <ul>
           {books.map((book) => (
-            <BookCard user={user} book={book} key={book.id} type="search" />
+            <BookCard
+              user={user}
+              currentUser={user}
+              book={book}
+              key={book.id}
+              type="search"
+            />
           ))}
         </ul>
       ) : (
