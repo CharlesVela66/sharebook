@@ -16,10 +16,13 @@ const MyFriends = async () => {
         <FriendModal />
       </div>
       {friends.length > 0 ? (
-        <div className="grid grid-cols-2 w-full">
-          {friends.map((friend) => (
-            <FriendCard key={friend.$id} friend={friend} />
-          ))}
+        <div className="flex w-full mt-4">
+          <div className="grid grid-cols-2 w-3/4 gap-2">
+            {friends.map((friend) => (
+              <FriendCard key={friend.$id} friend={friend} />
+            ))}
+          </div>
+          <div className="w-1/4">Filters</div>
         </div>
       ) : (
         <p>You don&apos;t have any friends!</p>
