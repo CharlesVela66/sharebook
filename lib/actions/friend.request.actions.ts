@@ -168,7 +168,6 @@ export const sendFriendRequest = async ({
         senderId,
         receiverId,
         status: 'pending',
-        createdAt: new Date().toISOString(),
       }
     );
 
@@ -195,7 +194,6 @@ export const updateFriendRequestStatus = async ({
       requestId,
       {
         status,
-        updatedAt: new Date().toISOString(),
       }
     );
 

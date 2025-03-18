@@ -212,7 +212,7 @@ const FriendModal = () => {
     // Current user sent the pending request
     if (status.status === 'pending' && status.senderId === currentUserId) {
       return (
-        <Button className="bg-green/80 text-white rounded-lg" disabled>
+        <Button className="bg-green text-white rounded-lg" disabled>
           Pending
         </Button>
       );
