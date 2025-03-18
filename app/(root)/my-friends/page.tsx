@@ -1,3 +1,4 @@
+import FriendCard from '@/components/user/FriendCard';
 import FriendModal from '@/components/user/FriendModal';
 import { getUserFriends } from '@/lib/actions/friend.request.actions';
 import { getCurrentUser } from '@/lib/actions/user.actions';
@@ -15,12 +16,11 @@ const MyFriends = async () => {
         <FriendModal />
       </div>
       {friends.length > 0 ? (
-        <>
+        <div className="grid grid-cols-2 w-full">
           {friends.map((friend) => (
-            // <FriendCard key={friend.$id} friend={friend} user={user} />
-            <div key={friend.$id}>Hola</div>
+            <FriendCard key={friend.$id} friend={friend} />
           ))}
-        </>
+        </div>
       ) : (
         <p>You don&apos;t have any friends!</p>
       )}
