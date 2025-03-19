@@ -17,9 +17,9 @@ const Profile = async ({ params }: { params: { userId: string } }) => {
   }
   const response = await getUserActivity({ userId: user.$id });
   const bookActivity = response.books;
-  const count = bookActivity?.filter((act) => act?.userRating).length;
+  const count = bookActivity?.filter((act) => act?.status === 'Read').length;
   const ratingAvg =
-    bookActivity.length > 0
+    bookActivity.length > 0 && count > 0
       ? (
           bookActivity?.reduce(
             (accum, act) =>
@@ -27,7 +27,7 @@ const Profile = async ({ params }: { params: { userId: string } }) => {
             0
           ) / count
         ).toFixed(2)
-      : 0;
+      : '0.00';
 
   const formattedFeed = [
     {
