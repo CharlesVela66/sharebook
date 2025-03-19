@@ -7,10 +7,11 @@ import { formatDate, formatDateOptions } from '@/lib/utils';
 import { Book } from '@/types';
 import Image from 'next/image';
 import React from 'react';
-import { getUserById } from '@/lib/actions/user.actions';
+import { getCurrentUser, getUserById } from '@/lib/actions/user.actions';
 
 const Profile = async ({ params }: { params: { userId: string } }) => {
   const param = await params;
+  const currentUser = await getCurrentUser();
   const user = await getUserById({ userId: param.userId });
   if (!user) {
     throw new Error('User not found');
@@ -70,11 +71,12 @@ const Profile = async ({ params }: { params: { userId: string } }) => {
               {count} {count === 1 ? 'rating' : 'ratings'} ({ratingAvg} avg)
             </p>
           </div>
-          <EditProfile user={user} />
+          {currentUser.$id === user.$id && <EditProfile user={user} />}
         </div>
         <div className="max-w-[420px] w-full">
           <ReadingChallenge
             goal={user.readingGoal}
+            currentUserId={currentUser.$id}
             userId={user.$id}
             readBookCount={count!}
           />

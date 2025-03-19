@@ -16,10 +16,12 @@ import { setReadingGoal } from '@/lib/actions/user.actions';
 
 const ReadingChallenge = ({
   goal,
+  currentUserId,
   userId,
   readBookCount,
 }: {
   goal?: number | null;
+  currentUserId?: string;
   userId: string;
   readBookCount: number;
 }) => {
@@ -119,64 +121,67 @@ const ReadingChallenge = ({
         ) : (
           <>
             <p className="text-center mx-20 py-4 font-normal">
-              You don&apos;t have a reading goal!
+              {userId === currentUserId ? "You don't" : "This user doesn't"}{' '}
+              have a reading goal!
             </p>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-brand font-semibold p-6 text-[18px]">
-                  Set Goal
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[512px] bg-white flex flex-col items-center">
-                <DialogHeader>
-                  <DialogTitle className="text-center text-[24px] mb-2 font-bold">
-                    Set Reading Goal
-                  </DialogTitle>
-                  <DialogDescription className="mb-2 text-[16px] text-center font-medium">
-                    How many books are you going to read in{' '}
-                    {new Date().getFullYear()}?
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex items-center justify-between w-full max-w-[400px] px-4 my-3">
-                  <Button
-                    variant="ghost"
-                    className="text-[64px] w-20 h-20 flex items-center justify-center"
-                    onClick={decrementGoal}
-                  >
-                    -
+            {userId === currentUserId && (
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-brand font-semibold p-6 text-[18px]">
+                    Set Goal
                   </Button>
-                  <div className="w-48 text-center">
-                    <input
-                      type="text"
-                      value={inputValue}
-                      onChange={handleInputChange}
-                      onBlur={handleInputBlur}
-                      onKeyDown={handleKeyDown}
-                      className="text-[78px] font-semibold text-brand-100 w-full text-center bg-transparent tabular-nums focus:outline-none"
-                      inputMode="numeric"
-                      pattern="\d*"
-                    />
+                </DialogTrigger>
+                <DialogContent className="max-w-[512px] bg-white flex flex-col items-center">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-[24px] mb-2 font-bold">
+                      Set Reading Goal
+                    </DialogTitle>
+                    <DialogDescription className="mb-2 text-[16px] text-center font-medium">
+                      How many books are you going to read in{' '}
+                      {new Date().getFullYear()}?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex items-center justify-between w-full max-w-[400px] px-4 my-3">
+                    <Button
+                      variant="ghost"
+                      className="text-[64px] w-20 h-20 flex items-center justify-center"
+                      onClick={decrementGoal}
+                    >
+                      -
+                    </Button>
+                    <div className="w-48 text-center">
+                      <input
+                        type="text"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
+                        className="text-[78px] font-semibold text-brand-100 w-full text-center bg-transparent tabular-nums focus:outline-none"
+                        inputMode="numeric"
+                        pattern="\d*"
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="text-[64px] w-20 h-20 flex items-center justify-center"
+                      onClick={incrementGoal}
+                    >
+                      +
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="text-[64px] w-20 h-20 flex items-center justify-center"
-                    onClick={incrementGoal}
-                  >
-                    +
-                  </Button>
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-brand text-[16px] py-5 px-12 font-semibold"
-                    onClick={handleSubmit}
-                  >
-                    Done
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-brand text-[16px] py-5 px-12 font-semibold"
+                      onClick={handleSubmit}
+                    >
+                      Done
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </>
         )}
       </div>
