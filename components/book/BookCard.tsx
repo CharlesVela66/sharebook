@@ -22,20 +22,24 @@ const BookCard = async ({ book, user, currentUser, type }: BookCardProps) => {
   return (
     <div className="max-w-[920px] bg-white rounded-3xl mb-8 shadow-lg h-[220px]">
       {type === 'feed' && (
-        <Image
-          src={user.profilePic || '/images/profile-pic.png'}
-          alt="profile"
-          width={48}
-          height={48}
-          className="rounded-full object-cover h-[48px] absolute z-10 -translate-x-5 -translate-y-1"
-        />
+        <Link href={`/profile/${user.$id}`}>
+          <Image
+            src={user.profilePic || '/images/profile-pic.png'}
+            alt="profile"
+            width={48}
+            height={48}
+            className="rounded-full object-cover h-[48px] absolute z-10 -translate-x-5 -translate-y-1"
+          />
+        </Link>
       )}
       <div className="flex flex-col my-2 ml-6">
         {type === 'feed' && (
           <div className="flex justify-between">
             <div className="flex gap-2">
               <h2 className="text-[18px] font-normal ml-3 mb-4">
-                <span className="text-brand font-medium ">{user.name}</span>{' '}
+                <Link href={`/profile/${user.$id}`}>
+                  <span className="text-brand font-medium ">{user.name}</span>{' '}
+                </Link>
                 {book.userRating ? `rated a book` : text?.activityText}
               </h2>
               {book.userRating! > 0 && (
