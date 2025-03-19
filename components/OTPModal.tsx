@@ -33,7 +33,9 @@ const OTPModal = ({
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent
+  ) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -73,7 +75,16 @@ const OTPModal = ({
             <span className="pl-1 text-brand">{email}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <InputOTP maxLength={6} value={password} onChange={setPassword}>
+        <InputOTP
+          maxLength={6}
+          value={password}
+          onChange={setPassword}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSubmit(e);
+            }
+          }}
+        >
           <InputOTPGroup className="w-full flex justify-center">
             <InputOTPSlot
               index={0}
